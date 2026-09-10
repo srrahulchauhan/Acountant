@@ -11,6 +11,7 @@ import Statements from './pages/Statements';
 import Reports from './pages/Reports';
 import CalendarView from './pages/CalendarView';
 import Settings from './pages/Settings';
+import UdhaarAccount from './pages/UdhaarAccount';
 import Login from './pages/Login';
 
 import { useAuth } from './context/AuthContext';
@@ -29,6 +30,7 @@ function App() {
         <Route index element={<Dashboard />} />
 
         <Route path="daily-expenses" element={<DailyExpenses />} />
+        <Route path="udhaar" element={<UdhaarAccount />} />
         <Route path="customers" element={<Customers />} />
         <Route path="loans" element={<Loans />} />
         <Route path="emi-payments" element={<EmiPayments />} />

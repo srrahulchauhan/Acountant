@@ -28,7 +28,6 @@ const Settings = () => {
     address: '',
     gstNumber: '',
     panNumber: '',
-    bankDetails: '',
     upiId: '',
     invoiceFooterMessage: 'Thank you for your business. For any questions, please contact Rahul Chauhan (R Accountant).',
     currencySymbol: '₹',
@@ -226,16 +225,10 @@ const Settings = () => {
                   <textarea className="form-control" rows="2" name="address" value={settings.address} onChange={handleChange} placeholder="Enter full office / business street address..."></textarea>
                 </div>
 
-                {/* Bank Details & UPI ID */}
-                <div className="col-12 col-md-6">
-                  <label className="form-label small fw-semibold text-muted">Company Bank Details</label>
-                  <input type="text" className="form-control" name="bankDetails" value={settings.bankDetails} onChange={handleChange} placeholder="HDFC Bank • A/C: 502000... • IFSC: HDFC0001234" />
-                  <small className="text-muted d-block mt-0.5" style={{ fontSize: '0.68rem' }}>Displayed on invoices &amp; repayment slips</small>
-                </div>
-
+                {/* UPI ID */}
                 <div className="col-12 col-md-6">
                   <label className="form-label small fw-semibold text-muted">UPI ID for Payments</label>
-                  <input type="text" className="form-control font-monospace" name="upiId" value={settings.upiId} onChange={handleChange} placeholder="rahul@okhdfcbank" />
+                  <input type="text" className="form-control font-monospace" name="upiId" value={settings.upiId} onChange={handleChange} placeholder="rahul@upi" />
                   <small className="text-muted d-block mt-0.5" style={{ fontSize: '0.68rem' }}>Direct UPI address for borrower collections</small>
                 </div>
 

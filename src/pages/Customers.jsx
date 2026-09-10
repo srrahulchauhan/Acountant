@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   MdSearch, MdPersonAdd, MdEdit, MdDelete, MdPhone, MdEmail, 
-  MdHome, MdAccountBalance, MdPayment, MdFileUpload, MdBadge, MdWork,
+  MdHome, MdPayment, MdFileUpload, MdBadge, MdWork,
   MdSend, MdChat, MdHistory, MdViewList, MdViewModule, MdVisibility,
   MdAccountBalanceWallet
 } from 'react-icons/md';
@@ -29,7 +29,6 @@ const Customers = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingCustomer, setEditingCustomer] = useState(null);
   const [selectedProfile, setSelectedProfile] = useState(null);
-  const [profileActiveTab, setProfileActiveTab] = useState('overview'); // 'overview'
   const [deleteConfirmId, setDeleteConfirmId] = useState(null);
   const [commModal, setCommModal] = useState({ open: false, customerId: null, loanId: null, templateKey: 'loan_statement' });
 
@@ -61,7 +60,7 @@ const Customers = () => {
     };
   }, []);
 
-  const openProfileModal = (cust, initialTab = 'overview') => {
+  const openProfileModal = (cust) => {
     const custLoans = loans.filter((l) => l.customerId === cust.id);
     const totalLoanAmt = custLoans.reduce((s, l) => s + Number(l.totalAmount || 0), 0);
     const custPayments = payments.filter((p) => p.customerId === cust.id && p.status === 'Paid');
@@ -69,7 +68,6 @@ const Customers = () => {
     const outstandingBalance = Math.max(0, totalLoanAmt - totalPaidAmt);
     const totalMonthlyEmi = custLoans.reduce((s, l) => s + Number(l.emiAmount || 0), 0);
 
-    setProfileActiveTab(initialTab);
     setSelectedProfile({
       ...cust,
       custLoans,
@@ -312,15 +310,6 @@ const Customers = () => {
                           <div className="d-flex align-items-center justify-content-end gap-1.5">
                             <button
                               type="button"
-                              className="btn btn-outline-info btn-sm rounded-3 px-2 py-1.5 fw-bold d-flex align-items-center gap-1 text-dark"
-                              onClick={() => openProfileModal(cust, 'bankAccounts')}
-                              title="Customer Bank Accounts & Statement"
-                            >
-                              <MdAccountBalance size={14} className="text-primary" /> Banks
-                            </button>
-
-                            <button
-                              type="button"
                               className="btn btn-outline-success btn-sm rounded-3 px-2 py-1.5 fw-bold d-flex align-items-center gap-1"
                               onClick={() => setCommModal({ open: true, customerId: cust.id, loanId: custLoans[0]?.id || null, templateKey: 'loan_statement' })}
                               title="Send Statement via WhatsApp / Gmail"
@@ -331,7 +320,7 @@ const Customers = () => {
                             <button
                               type="button"
                               className="btn btn-outline-primary btn-sm rounded-3 px-2 py-1.5 fw-semibold d-flex align-items-center gap-1"
-                              onClick={() => openProfileModal(cust, 'overview')}
+                              onClick={() => openProfileModal(cust)}
                               title="View Profile"
                             >
                               <MdVisibility size={15} />
@@ -457,18 +446,10 @@ const Customers = () => {
                       </div>
                     </div>
 
-                    <div className="d-flex flex-wrap gap-2 mt-auto">
-                      <button
-                        className="btn btn-outline-info btn-sm rounded-3 fw-bold py-2 d-flex align-items-center justify-content-center gap-1 text-dark"
-                        style={{ flex: '1 1 auto' }}
-                        title="Customer Bank Accounts & Statements"
-                        onClick={() => openProfileModal(cust, 'bankAccounts')}
-                      >
-                        <MdAccountBalance size={15} className="text-primary" /> Banks
-                      </button>
+                    <div className="d-flex gap-2 mt-auto">
                       <button
                         className="btn btn-outline-success btn-sm rounded-3 fw-bold py-2 d-flex align-items-center justify-content-center gap-1"
-                        style={{ flex: '0 0 auto' }}
+                        style={{ flex: '1 1 auto' }}
                         title="Send Statement via WhatsApp / Gmail"
                         onClick={() => setCommModal({ open: true, customerId: cust.id, loanId: custLoans[0]?.id || null, templateKey: 'loan_statement' })}
                       >
@@ -477,7 +458,7 @@ const Customers = () => {
                       <button
                         className="btn btn-primary btn-sm rounded-3 fw-bold py-2 shadow-2xs"
                         style={{ flex: '1 1 auto' }}
-                        onClick={() => openProfileModal(cust, 'overview')}
+                        onClick={() => openProfileModal(cust)}
                       >
                         View Profile
                       </button>
@@ -598,15 +579,10 @@ const Customers = () => {
 
               <div className="modal-body p-4 bg-light">
                 
-                {/* Modal Tab Switcher */}
+                {/* Modal Header Bar */}
                 <div className="d-flex align-items-center justify-content-between mb-4 border-bottom pb-2">
-                  <div className="btn-group bg-white p-1 rounded-pill shadow-2xs border">
-                    <button 
-                      type="button"
-                      className={`btn btn-sm rounded-pill px-3.5 fw-bold btn-primary shadow-sm`}
-                    >
-                      👤 Profile &amp; Loans Overview
-                    </button>
+                  <div className="fw-bold text-dark fs-6 d-flex align-items-center gap-1.5">
+                    👤 Profile &amp; Loans Overview
                   </div>
 
                   <span className="badge bg-light text-dark border px-3 py-1.5 rounded-pill font-monospace small">
@@ -614,9 +590,7 @@ const Customers = () => {
                   </span>
                 </div>
 
-                {/* TAB 1: OVERVIEW & LOANS */}
-                {profileActiveTab === 'overview' && (
-                  <div>
+                <div>
                     {/* Info Cards Row */}
                     <div className="row g-3 mb-4">
                       <div className="col-12 col-md-3">
@@ -708,9 +682,6 @@ const Customers = () => {
                       )}
                     </div>
                   </div>
-                )}
-
-
               </div>
 
               <div className="modal-footer border-0 bg-light py-3 px-4 d-flex justify-content-between">

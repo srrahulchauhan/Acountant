@@ -65,7 +65,7 @@ const DailyExpenses = () => {
   const [categoryFilter, setCategoryFilter] = useState('All');
   const [dateFilter, setDateFilter] = useState('Today'); // 'Today', 'This Week', 'This Month', 'All'
 
-  // Load from Local Storage & bankStore
+  // Load from Local Storage
   useEffect(() => {
     try {
       const savedExpenses = localStorage.getItem(LOCAL_STORAGE_EXPENSES_KEY);
@@ -82,8 +82,6 @@ const DailyExpenses = () => {
         setDailyBudget(b);
         setTempBudget(b);
       }
-
-      setBankAccounts(bankStore.getBankAccounts(false).filter(a => a.status === 'Active'));
     } catch (e) {
       console.error("Failed to load daily expenses data", e);
     }

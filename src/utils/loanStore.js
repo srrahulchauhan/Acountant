@@ -73,7 +73,6 @@ const defaultSettings = {
   address: '',
   gstNumber: '',
   panNumber: '',
-  bankDetails: '',
   upiId: '',
   invoiceFooterMessage: 'Thank you for your business. For any questions, please contact Rahul Chauhan (R Accountant).',
   currencySymbol: '₹',
@@ -502,6 +501,8 @@ export const loanStore = {
       settings: this.getSettings(),
       communications: this.getCommunications(),
       templates: this.getCommunicationTemplates(),
+      udhaarPersons: JSON.parse(localStorage.getItem('rc_udhaar_persons') || '[]'),
+      udhaarTransactions: JSON.parse(localStorage.getItem('rc_udhaar_transactions') || '[]'),
       exportedAt: new Date().toISOString(),
     };
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
@@ -524,7 +525,10 @@ export const loanStore = {
       if (parsed.settings) localStorage.setItem(KEYS.SETTINGS, JSON.stringify(parsed.settings));
       if (parsed.communications) localStorage.setItem(KEYS.COMMUNICATIONS, JSON.stringify(parsed.communications));
       if (parsed.templates) localStorage.setItem(KEYS.COMM_TEMPLATES, JSON.stringify(parsed.templates));
+      if (parsed.udhaarPersons) localStorage.setItem('rc_udhaar_persons', JSON.stringify(parsed.udhaarPersons));
+      if (parsed.udhaarTransactions) localStorage.setItem('rc_udhaar_transactions', JSON.stringify(parsed.udhaarTransactions));
       this.notify();
+      window.dispatchEvent(new CustomEvent('udhaarStoreUpdated'));
       return true;
     } catch (e) {
       console.error('Import error:', e);

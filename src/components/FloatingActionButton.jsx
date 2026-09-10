@@ -542,7 +542,7 @@ const FloatingActionButton = () => {
 
                     <div className="col-12">
                       <label className="form-label small fw-semibold text-muted">Loan Notes & Terms</label>
-                      <textarea className="form-control" rows="2" name="notes" placeholder="Additional loan notes or bank reference..." value={loanForm.notes} onChange={handleLoanFormChange}></textarea>
+                      <textarea className="form-control" rows="2" name="notes" placeholder="Additional loan notes or reference..." value={loanForm.notes} onChange={handleLoanFormChange}></textarea>
                     </div>
                   </div>
                 </div>

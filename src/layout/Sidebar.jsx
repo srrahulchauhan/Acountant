@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 import { 
     MdDashboard, MdPeople, MdPayment, 
-    MdEvent, MdReceiptLong, MdBarChart, MdSettings, MdLogout
+    MdEvent, MdReceiptLong, MdBarChart, MdSettings, MdLogout,
+    MdCompareArrows
 } from 'react-icons/md';
 import { useAuth } from '../context/AuthContext';
 import { loanStore } from '../utils/loanStore';
@@ -28,7 +29,7 @@ const Sidebar = ({ closeMobileSidebar }) => {
 
   const menuItems = [
     { name: 'Dashboard', path: '/', icon: <MdDashboard size={22} /> },
-
+    { name: 'Friend / Udhaar', path: '/udhaar', icon: <MdCompareArrows size={22} /> },
     { name: 'Daily Expenses', path: '/daily-expenses', icon: <MdReceiptLong size={22} /> },
     { name: 'Customers', path: '/customers', icon: <MdPeople size={22} /> },
     { name: 'Loans', path: '/loans', icon: <MdPayment size={22} /> },

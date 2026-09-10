@@ -15,7 +15,7 @@ let _idCounter = 0;
 const uid = (prefix) => `${prefix}_${++_idCounter}_${Date.now()}`;
 
 /**
- * Build all smart notifications from loanStore & bankStore data
+ * Build all smart notifications from loanStore data
  * @param {Array} payments
  * @param {Array} loans
  * @param {Array} customers
