@@ -83,17 +83,102 @@ export const Dashboard = ({ onOpenQuickAdd }) => {
     window.open(`https://wa.me/?text=${text}`, '_blank');
   };
 
+  // Real-time ticking clock
+  const [liveTime, setLiveTime] = React.useState(() => new Date().toLocaleTimeString('en-IN'));
+  const [liveActive, setLiveActive] = React.useState(true);
+
+  React.useEffect(() => {
+    const timer = setInterval(() => {
+      setLiveTime(new Date().toLocaleTimeString('en-IN'));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
   return (
     <div className="space-y-6 sm:space-y-8 animate-in fade-in duration-300">
+      {/* ⚡ Live Telemetry Ticker Ribbon */}
+      <div className="flex items-center gap-3 p-2.5 px-4 rounded-2xl bg-white dark:bg-[#0E1526]/90 border border-slate-200/80 dark:border-white/[0.08] shadow-sm overflow-hidden select-none">
+        <div className="flex items-center gap-2 pr-3 border-r border-slate-200 dark:border-white/10 shrink-0">
+          <span className="relative flex h-2.5 w-2.5">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+          </span>
+          <span className="text-[11px] font-extrabold font-heading text-emerald-600 dark:text-emerald-400 tracking-wider uppercase">
+            Live Telemetry
+          </span>
+        </div>
+
+        {/* Marquee ticker feed */}
+        <div className="overflow-hidden whitespace-nowrap flex-1 text-xs text-slate-600 dark:text-slate-300 font-medium">
+          <div className="animate-ticker flex items-center gap-8">
+            <span className="flex items-center gap-1.5">
+              <span className="text-emerald-500">●</span>
+              <span>HDFC Bank: Active & Verified</span>
+              <span className="font-mono font-bold text-slate-900 dark:text-white">
+                ({currency}{totalBalance.toLocaleString('en-IN')})
+              </span>
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="text-amber-500">●</span>
+              <span>Today's Outflow:</span>
+              <span className="font-mono font-bold text-rose-500">
+                {currency}{todayExpense.toLocaleString('en-IN')}
+              </span>
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="text-pink-500">●</span>
+              <span>Pending Udhaar:</span>
+              <span className="font-mono font-bold text-pink-500">
+                {currency}{pendingUdhaar.toLocaleString('en-IN')}
+              </span>
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="text-purple-500">●</span>
+              <span>Next EMI:</span>
+              <span className="font-mono font-bold text-purple-400">
+                {nextEmi ? `${nextEmi.loanName} (${currency}${nextEmi.monthlyEmi.toLocaleString('en-IN')})` : 'All clear'}
+              </span>
+            </span>
+            <span className="flex items-center gap-1.5 text-slate-400 font-mono">
+              <span>Sync Time: {liveTime} IST</span>
+            </span>
+          </div>
+        </div>
+
+        <div className="hidden md:flex items-center gap-2 pl-3 border-l border-slate-200 dark:border-white/10 shrink-0 font-mono text-[11px] text-slate-400">
+          <span>{liveTime}</span>
+        </div>
+      </div>
+
       {/* 🌟 Luxury Hero Greeting Banner */}
       <div className="relative p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-amber-500/10 via-amber-400/5 to-transparent border border-amber-500/20 overflow-hidden shadow-soft">
         <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-amber-400/10 via-sky-400/5 to-transparent rounded-full blur-3xl pointer-events-none -mr-20 -mt-20" />
 
         <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-amber-400/15 text-amber-800 dark:text-amber-300 border border-amber-400/25">
-              <GreetingIcon className={`w-3.5 h-3.5 ${greeting.color}`} />
-              <span>{greeting.text}, {profile.name}</span>
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-amber-400/15 text-amber-800 dark:text-amber-300 border border-amber-400/25">
+                <GreetingIcon className={`w-3.5 h-3.5 ${greeting.color}`} />
+                <span>{greeting.text}, {profile.name}</span>
+              </div>
+
+              <button
+                onClick={() => setLiveActive(prev => !prev)}
+                className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold font-mono transition-all ${
+                  liveActive
+                    ? 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/25 shadow-sm'
+                    : 'bg-slate-100 text-slate-500 dark:bg-white/10 dark:text-slate-400 border border-transparent'
+                }`}
+                title="Click to toggle live feed"
+              >
+                <span className="relative flex h-2 w-2">
+                  {liveActive && (
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  )}
+                  <span className={`relative inline-flex rounded-full h-2 w-2 ${liveActive ? 'bg-emerald-500' : 'bg-slate-400'}`}></span>
+                </span>
+                <span>{liveActive ? 'Live Sync Active' : 'Live Paused'}</span>
+              </button>
             </div>
 
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black font-heading tracking-tight text-slate-900 dark:text-white">
@@ -101,7 +186,7 @@ export const Dashboard = ({ onOpenQuickAdd }) => {
             </h2>
 
             <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-xl">
-              Track daily spends, collect pending udhaar, and ensure timely EMI repayments with zero stress.
+              Real-time cashflow telemetry, instant udhaar reminders, and automated EMI tracking with live sync.
             </p>
           </div>
 
