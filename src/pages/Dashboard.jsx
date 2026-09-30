@@ -8,14 +8,9 @@ import {
   ArrowDownRight,
   Clock,
   CheckCircle2,
-  Plus,
   ChevronRight,
   Flame,
-  Sun,
-  Moon,
-  Sunset,
   MessageCircle,
-  ArrowRightLeft,
   PieChart as PieIcon,
 } from 'lucide-react';
 import {
@@ -29,7 +24,7 @@ import {
 import { useApp } from '../context/AppContext';
 import { StatCard } from '../components/StatCard';
 
-export const Dashboard = ({ onOpenQuickAdd }) => {
+export const Dashboard = ({ onOpenQuickAdd: _onOpenQuickAdd }) => {
   const {
     profile,
     currency,
@@ -50,19 +45,6 @@ export const Dashboard = ({ onOpenQuickAdd }) => {
     payEmiInstallment,
     setActiveTab,
   } = useApp();
-
-  // Dynamic greeting based on current local hour
-  const currentHour = new Date().getHours();
-  const greeting =
-    currentHour < 12
-      ? { text: 'Good Morning', icon: Sun, color: 'text-amber-500' }
-      : currentHour < 17
-      ? { text: 'Good Afternoon', icon: Sun, color: 'text-amber-500' }
-      : currentHour < 21
-      ? { text: 'Good Evening', icon: Sunset, color: 'text-orange-500' }
-      : { text: 'Good Night', icon: Moon, color: 'text-indigo-400' };
-
-  const GreetingIcon = greeting.icon;
 
   const COLORS = ['#F59E0B', '#0284C7', '#EC4899', '#8B5CF6', '#10B981', '#F43F5E', '#3B82F6', '#64748B'];
 
@@ -85,7 +67,6 @@ export const Dashboard = ({ onOpenQuickAdd }) => {
 
   // Real-time ticking clock
   const [liveTime, setLiveTime] = React.useState(() => new Date().toLocaleTimeString('en-IN'));
-  const [liveActive, setLiveActive] = React.useState(true);
 
   React.useEffect(() => {
     const timer = setInterval(() => {
@@ -150,74 +131,7 @@ export const Dashboard = ({ onOpenQuickAdd }) => {
         </div>
       </div>
 
-      {/* 🌟 Luxury Hero Greeting Banner */}
-      <div className="relative p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-amber-500/10 via-amber-400/5 to-transparent border border-amber-500/20 overflow-hidden shadow-soft">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-amber-400/10 via-sky-400/5 to-transparent rounded-full blur-3xl pointer-events-none -mr-20 -mt-20" />
 
-        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-          <div className="space-y-2">
-            <div className="flex flex-wrap items-center gap-2">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-amber-400/15 text-amber-800 dark:text-amber-300 border border-amber-400/25">
-                <GreetingIcon className={`w-3.5 h-3.5 ${greeting.color}`} />
-                <span>{greeting.text}, {profile.name}</span>
-              </div>
-
-              <button
-                onClick={() => setLiveActive(prev => !prev)}
-                className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold font-mono transition-all ${
-                  liveActive
-                    ? 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/25 shadow-sm'
-                    : 'bg-slate-100 text-slate-500 dark:bg-white/10 dark:text-slate-400 border border-transparent'
-                }`}
-                title="Click to toggle live feed"
-              >
-                <span className="relative flex h-2 w-2">
-                  {liveActive && (
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                  )}
-                  <span className={`relative inline-flex rounded-full h-2 w-2 ${liveActive ? 'bg-emerald-500' : 'bg-slate-400'}`}></span>
-                </span>
-                <span>{liveActive ? 'Live Sync Active' : 'Live Paused'}</span>
-              </button>
-            </div>
-
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black font-heading tracking-tight text-slate-900 dark:text-white">
-              Financial Command Center
-            </h2>
-
-            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-xl">
-              Real-time cashflow telemetry, instant udhaar reminders, and automated EMI tracking with live sync.
-            </p>
-          </div>
-
-          {/* Quick Action Button Cluster */}
-          <div className="flex flex-wrap items-center gap-2.5">
-            <button
-              onClick={() => onOpenQuickAdd('expense')}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-400 hover:from-amber-500 hover:to-yellow-500 text-slate-950 font-bold text-xs sm:text-sm shadow-md shadow-amber-500/20 active:scale-95 transition-all"
-            >
-              <Plus className="w-4 h-4 stroke-[2.8]" />
-              <span>Add Expense</span>
-            </button>
-
-            <button
-              onClick={() => onOpenQuickAdd('udhaar')}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white dark:bg-white/[0.06] hover:bg-slate-50 dark:hover:bg-white/10 text-slate-800 dark:text-slate-200 font-bold text-xs sm:text-sm border border-slate-200/90 dark:border-white/10 shadow-soft active:scale-95 transition-all"
-            >
-              <BookOpen className="w-4 h-4 text-pink-500" />
-              <span>Udhaar Khata</span>
-            </button>
-
-            <button
-              onClick={() => onOpenQuickAdd('transfer')}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white dark:bg-white/[0.06] hover:bg-slate-50 dark:hover:bg-white/10 text-slate-800 dark:text-slate-200 font-bold text-xs sm:text-sm border border-slate-200/90 dark:border-white/10 shadow-soft active:scale-95 transition-all"
-            >
-              <ArrowRightLeft className="w-4 h-4 text-emerald-500" />
-              <span>Transfer</span>
-            </button>
-          </div>
-        </div>
-      </div>
 
       {/* 📊 Main Stat Cards Row (Live Animated Cards) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
