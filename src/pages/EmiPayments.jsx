@@ -42,6 +42,7 @@ export const EmiPayments = ({ onOpenAddModal }) => {
   } = useApp();
 
   const [selectedLenderId, setSelectedLenderId] = useState(null);
+  const [globalFilterStatus, setGlobalFilterStatus] = useState(null); // 'All', 'Pending', 'Advance Payment', 'Completed'
 
   // Progress percentage
   const overallRepaidPercent = totalLoan > 0 ? Math.round((paidEMI / totalLoan) * 100) : 0;
@@ -113,12 +114,15 @@ export const EmiPayments = ({ onOpenAddModal }) => {
         {/* Live Dashboard */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {/* Total Portfolio */}
-          <div className="p-6 rounded-3xl bg-white dark:bg-[#0A0F1D] border border-slate-200 dark:border-white/10 shadow-soft relative overflow-hidden group">
+          <div 
+            onClick={() => setGlobalFilterStatus('All')}
+            className="p-6 rounded-3xl bg-white dark:bg-[#0A0F1D] border border-slate-200 dark:border-white/10 shadow-soft relative overflow-hidden group cursor-pointer hover:shadow-card-hover hover:-translate-y-1 transition-all"
+          >
             <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
               <Activity className="w-24 h-24 text-indigo-500" />
             </div>
             <div className="flex items-center gap-3 mb-4 relative z-10">
-              <div className="p-2.5 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400">
+              <div className="p-2.5 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 group-hover:scale-110 transition-transform">
                 <Activity className="w-5 h-5" />
               </div>
               <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
@@ -126,7 +130,7 @@ export const EmiPayments = ({ onOpenAddModal }) => {
               </span>
             </div>
             <div className="relative z-10">
-              <div className="text-2xl sm:text-3xl font-black font-heading font-mono text-slate-900 dark:text-white mb-1">
+              <div className="text-2xl sm:text-3xl font-black font-heading font-mono text-slate-900 dark:text-white mb-1 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
                 {currency}{totalPortfolioAmount.toLocaleString('en-IN')}
               </div>
               <p className="text-xs font-semibold text-slate-400">
@@ -136,12 +140,15 @@ export const EmiPayments = ({ onOpenAddModal }) => {
           </div>
 
           {/* Pending EMIs */}
-          <div className="p-6 rounded-3xl bg-white dark:bg-[#0A0F1D] border border-slate-200 dark:border-white/10 shadow-soft relative overflow-hidden group">
+          <div 
+            onClick={() => setGlobalFilterStatus('Pending')}
+            className="p-6 rounded-3xl bg-white dark:bg-[#0A0F1D] border border-slate-200 dark:border-white/10 shadow-soft relative overflow-hidden group cursor-pointer hover:shadow-card-hover hover:-translate-y-1 transition-all"
+          >
             <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
               <Clock3 className="w-24 h-24 text-amber-500" />
             </div>
             <div className="flex items-center gap-3 mb-4 relative z-10">
-              <div className="p-2.5 rounded-xl bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400">
+              <div className="p-2.5 rounded-xl bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 group-hover:scale-110 transition-transform">
                 <Clock3 className="w-5 h-5" />
               </div>
               <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
@@ -159,12 +166,15 @@ export const EmiPayments = ({ onOpenAddModal }) => {
           </div>
 
           {/* Advance Payments */}
-          <div className="p-6 rounded-3xl bg-white dark:bg-[#0A0F1D] border border-slate-200 dark:border-white/10 shadow-soft relative overflow-hidden group">
+          <div 
+            onClick={() => setGlobalFilterStatus('Advance Payment')}
+            className="p-6 rounded-3xl bg-white dark:bg-[#0A0F1D] border border-slate-200 dark:border-white/10 shadow-soft relative overflow-hidden group cursor-pointer hover:shadow-card-hover hover:-translate-y-1 transition-all"
+          >
             <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
               <Zap className="w-24 h-24 text-sky-500" />
             </div>
             <div className="flex items-center gap-3 mb-4 relative z-10">
-              <div className="p-2.5 rounded-xl bg-sky-50 dark:bg-sky-500/10 text-sky-600 dark:text-sky-400">
+              <div className="p-2.5 rounded-xl bg-sky-50 dark:bg-sky-500/10 text-sky-600 dark:text-sky-400 group-hover:scale-110 transition-transform">
                 <Zap className="w-5 h-5" />
               </div>
               <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
@@ -182,12 +192,15 @@ export const EmiPayments = ({ onOpenAddModal }) => {
           </div>
 
           {/* Completed Loans */}
-          <div className="p-6 rounded-3xl bg-white dark:bg-[#0A0F1D] border border-slate-200 dark:border-white/10 shadow-soft relative overflow-hidden group">
+          <div 
+            onClick={() => setGlobalFilterStatus('Completed')}
+            className="p-6 rounded-3xl bg-white dark:bg-[#0A0F1D] border border-slate-200 dark:border-white/10 shadow-soft relative overflow-hidden group cursor-pointer hover:shadow-card-hover hover:-translate-y-1 transition-all"
+          >
             <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
               <CheckCircle className="w-24 h-24 text-emerald-500" />
             </div>
             <div className="flex items-center gap-3 mb-4 relative z-10">
-              <div className="p-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+              <div className="p-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 group-hover:scale-110 transition-transform">
                 <CheckCircle className="w-5 h-5" />
               </div>
               <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
@@ -230,38 +243,38 @@ export const EmiPayments = ({ onOpenAddModal }) => {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 15 }}
                     onClick={() => setSelectedLenderId(app.id)}
-                    className={`p-6 rounded-3xl bg-gradient-to-br ${app.color || 'from-slate-700 to-slate-900'} shadow-lg cursor-pointer hover:scale-[1.02] transition-transform relative group flex flex-col justify-between`}
+                    className="p-6 sm:p-7 rounded-3xl bg-white dark:bg-[#0F172A]/90 border border-slate-200/80 dark:border-white/[0.08] shadow-soft cursor-pointer hover:shadow-card-hover hover:scale-[1.02] transition-all relative group flex flex-col justify-between"
                   >
                     <button
                       onClick={(e) => { e.stopPropagation(); deleteLenderApp(app.id); }}
-                      className="absolute top-4 right-4 p-2 bg-white/10 hover:bg-white/20 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity"
+                      className="absolute top-4 right-4 p-2 text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-xl opacity-0 group-hover:opacity-100 transition-colors"
                       title="Delete Account"
                     >
-                      <Trash2 className="w-4 h-4 text-white" />
+                      <Trash2 className="w-4 h-4" />
                     </button>
                     
                     <div className="flex items-center gap-4 mb-6">
-                      <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                      <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${app.color || 'from-slate-700 to-slate-900'} flex items-center justify-center`}>
                         {getLenderIcon(app.icon)}
                       </div>
                       <div>
-                        <h3 className="text-xl font-extrabold text-white leading-tight">
+                        <h3 className="text-lg sm:text-xl font-extrabold font-heading text-slate-900 dark:text-white leading-tight">
                           {app.name}
                         </h3>
-                        <p className="text-white/70 text-xs font-medium">
+                        <p className="text-slate-500 dark:text-slate-400 text-xs font-semibold mt-0.5">
                           {appEmis.length} Active Loans
                         </p>
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4 pt-4 border-t border-white/10">
+                    <div className="grid grid-cols-2 gap-4 pt-4 border-t border-slate-100 dark:border-white/[0.04]">
                       <div>
-                        <div className="text-white/60 text-[10px] font-bold uppercase tracking-wider mb-1">Total Loan</div>
-                        <div className="text-white font-mono font-bold text-sm">{currency}{appTotalLoan.toLocaleString('en-IN')}</div>
+                        <div className="text-slate-400 dark:text-slate-500 text-[10px] font-extrabold uppercase tracking-wider mb-1">Total Loan</div>
+                        <div className="text-slate-900 dark:text-white font-mono font-bold text-sm">{currency}{appTotalLoan.toLocaleString('en-IN')}</div>
                       </div>
                       <div>
-                        <div className="text-white/60 text-[10px] font-bold uppercase tracking-wider mb-1">Total Paid</div>
-                        <div className="text-emerald-300 font-mono font-bold text-sm">{currency}{appPaid.toLocaleString('en-IN')}</div>
+                        <div className="text-slate-400 dark:text-slate-500 text-[10px] font-extrabold uppercase tracking-wider mb-1">Total Paid</div>
+                        <div className="text-emerald-600 dark:text-emerald-400 font-mono font-bold text-sm">{currency}{appPaid.toLocaleString('en-IN')}</div>
                       </div>
                     </div>
                   </motion.div>
@@ -274,31 +287,56 @@ export const EmiPayments = ({ onOpenAddModal }) => {
     );
   }
 
-  // View 2: EMIs for selected Lender
-  const selectedLender = lenderApps.find(app => app.id === selectedLenderId);
-  const lenderEmis = emis.filter(e => e.lenderId === selectedLenderId);
+  // Determine what EMIs to show (either from Lender App OR Global Filter)
+  let activeEmisTitle = '';
+  let activeEmisSubtitle = '';
+  let activeEmisList = [];
+  let activeIcon = null;
+  let activeColor = '';
+
+  if (globalFilterStatus) {
+    activeEmisTitle = globalFilterStatus === 'All' ? 'All Portfolio Loans' : `${globalFilterStatus} Loans`;
+    activeEmisSubtitle = `Viewing all loans matching the ${globalFilterStatus} status`;
+    activeEmisList = emis.filter(e => {
+      if (globalFilterStatus === 'All') return true;
+      if (globalFilterStatus === 'Pending') return (e.status === 'Pending' || e.status === 'Upcoming' || !e.status);
+      return e.status === globalFilterStatus;
+    });
+    activeIcon = <Activity className="w-6 h-6 text-white" />;
+    activeColor = 'from-indigo-500 to-purple-600';
+  } else if (selectedLenderId) {
+    const selectedLender = lenderApps.find(app => app.id === selectedLenderId);
+    activeEmisTitle = `${selectedLender?.name} - Loans & EMIs`;
+    activeEmisSubtitle = 'Manage specific EMIs and loans for this account';
+    activeEmisList = emis.filter(e => e.lenderId === selectedLenderId);
+    activeIcon = getLenderIcon(selectedLender?.icon);
+    activeColor = selectedLender?.color || 'from-slate-700 to-slate-900';
+  }
 
   return (
     <div className="space-y-6 sm:space-y-8 animate-in fade-in duration-300">
       {/* Header */}
       <div className="flex flex-col gap-4">
         <button
-          onClick={() => setSelectedLenderId(null)}
+          onClick={() => {
+            setSelectedLenderId(null);
+            setGlobalFilterStatus(null);
+          }}
           className="inline-flex items-center gap-2 text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 font-semibold text-sm transition-colors self-start"
         >
-          <ArrowLeft className="w-4 h-4" /> Back to Accounts
+          <ArrowLeft className="w-4 h-4" /> Back to Dashboard
         </button>
 
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h2 className="text-2xl font-extrabold font-heading text-slate-900 dark:text-white tracking-tight flex items-center gap-2.5">
-              <span className={`p-2.5 rounded-2xl bg-gradient-to-br ${selectedLender?.color} text-white`}>
-                {getLenderIcon(selectedLender?.icon)}
+              <span className={`p-2.5 rounded-2xl bg-gradient-to-br ${activeColor} text-white shadow-md`}>
+                {activeIcon}
               </span>
-              {selectedLender?.name} - Loans & EMIs
+              {activeEmisTitle}
             </h2>
             <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
-              Manage specific EMIs and loans for this account
+              {activeEmisSubtitle}
             </p>
           </div>
 
@@ -313,18 +351,18 @@ export const EmiPayments = ({ onOpenAddModal }) => {
       </div>
 
       {/* EMI Cards Grid */}
-      {lenderEmis.length === 0 ? (
+      {activeEmisList.length === 0 ? (
         <EmptyState
           icon={CreditCard}
-          title={`No active loans for ${selectedLender?.name}`}
-          description="Add a loan specific to this account to track EMIs."
+          title="No active loans found"
+          description="There are no loans matching this view. Add a new loan to get started."
           actionLabel="+ Add Loan EMI"
           onAction={() => onOpenAddModal('emi')}
         />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <AnimatePresence>
-            {lenderEmis.map((item) => {
+            {activeEmisList.map((item) => {
               const percent = Math.min(100, Math.round((item.paidAmount / item.totalLoan) * 100));
               const isCompleted = item.status === 'Completed' || percent >= 100;
 
