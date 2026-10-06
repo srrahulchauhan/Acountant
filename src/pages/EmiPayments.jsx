@@ -3,6 +3,7 @@ import {
   CreditCard,
   Plus,
   Trash2,
+  Edit2,
   CheckCircle2,
   Clock,
   Sparkles,
@@ -249,13 +250,22 @@ export const EmiPayments = ({ onOpenAddModal }) => {
 
                   {/* Actions Bar */}
                   <div className="pt-4 border-t border-slate-100 dark:border-white/[0.06] flex items-center justify-between">
-                    <button
-                      onClick={() => deleteEmi(item.id)}
-                      className="p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors"
-                      title="Delete Loan"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => deleteEmi(item.id)}
+                        className="p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors"
+                        title="Delete Loan"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => onOpenAddModal('emi', item)}
+                        className="p-2 rounded-xl text-slate-400 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-950/40 transition-colors"
+                        title="Edit Loan"
+                      >
+                        <Edit2 className="w-4 h-4" />
+                      </button>
+                    </div>
 
                     {!isCompleted ? (
                       <button

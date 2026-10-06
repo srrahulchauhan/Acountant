@@ -30,14 +30,15 @@ const MainLayout = () => {
   const [modalState, setModalState] = useState({
     type: null, // 'expense' | 'udhaar' | 'customer' | 'emi' | 'account' | 'transfer'
     isOpen: false,
+    data: null,
   });
 
-  const openModal = (type) => {
-    setModalState({ type, isOpen: true });
+  const openModal = (type, data = null) => {
+    setModalState({ type, isOpen: true, data });
   };
 
   const closeModal = () => {
-    setModalState({ type: null, isOpen: false });
+    setModalState({ type: null, isOpen: false, data: null });
   };
 
   // Render current active page
@@ -112,6 +113,7 @@ const MainLayout = () => {
       <AddEmiModal
         isOpen={modalState.isOpen && modalState.type === 'emi'}
         onClose={closeModal}
+        editData={modalState.data}
       />
       <AddAccountModal
         isOpen={modalState.isOpen && modalState.type === 'account'}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Modal } from './Modal';
 import { useApp } from '../context/AppContext';
 import { EXPENSE_CATEGORIES } from '../data/dummyData';
@@ -453,8 +453,8 @@ export const AddCustomerModal = ({ isOpen, onClose }) => {
   );
 };
 
-export const AddEmiModal = ({ isOpen, onClose }) => {
-  const { addEmi, currency } = useApp();
+export const AddEmiModal = ({ isOpen, onClose, editData }) => {
+  const { addEmi, updateEmi, currency } = useApp();
   const defaultDueDate = new Date(Date.now() + 15 * 24 * 60 * 60 * 1000)
     .toISOString()
     .split('T')[0];
@@ -470,11 +470,34 @@ export const AddEmiModal = ({ isOpen, onClose }) => {
     paidAmount: 0,
   });
 
+  useEffect(() => {
+    if (isOpen) {
+      if (editData) {
+        setFormData(editData);
+      } else {
+        setFormData({
+          loanName: '',
+          lender: '',
+          totalLoan: '',
+          monthlyEmi: '',
+          dueDate: defaultDueDate,
+          tenorMonths: 12,
+          paidMonths: 0,
+          paidAmount: 0,
+        });
+      }
+    }
+  }, [isOpen, editData, defaultDueDate]);
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!formData.loanName || !formData.totalLoan || !formData.monthlyEmi) return;
 
-    addEmi(formData);
+    if (editData) {
+      updateEmi(editData.id, formData);
+    } else {
+      addEmi(formData);
+    }
     setFormData({
       loanName: '',
       lender: '',
@@ -492,7 +515,7 @@ export const AddEmiModal = ({ isOpen, onClose }) => {
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title="Add EMI Loan Payment"
+      title={editData ? "Edit EMI Loan Payment" : "Add EMI Loan Payment"}
       subtitle="Register bike, phone, laptop or student gadget EMI plans"
     >
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -611,7 +634,7 @@ export const AddEmiModal = ({ isOpen, onClose }) => {
             type="submit"
             className="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs shadow-soft transition-all"
           >
-            Save Loan
+            {editData ? "Update Loan" : "Save Loan"}
           </button>
         </div>
       </form>

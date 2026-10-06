@@ -343,6 +343,24 @@ export const AppProvider = ({ children }) => {
     showToast(`Loan "${emiData.loanName}" registered successfully!`);
   };
 
+  const updateEmi = (id, updatedData) => {
+    setEmis(prev => prev.map(emi => {
+      if (emi.id === id) {
+        return {
+          ...emi,
+          ...updatedData,
+          totalLoan: Number(updatedData.totalLoan || emi.totalLoan),
+          monthlyEmi: Number(updatedData.monthlyEmi || emi.monthlyEmi),
+          paidAmount: Number(updatedData.paidAmount ?? emi.paidAmount),
+          tenorMonths: Number(updatedData.tenorMonths || emi.tenorMonths),
+          paidMonths: Number(updatedData.paidMonths ?? emi.paidMonths),
+        };
+      }
+      return emi;
+    }));
+    showToast(`Loan updated successfully!`);
+  };
+
   const payEmiInstallment = (emiId) => {
     let paidAmount = 0;
     let loanName = '';
@@ -488,6 +506,7 @@ export const AppProvider = ({ children }) => {
     deleteUdhaar,
     emis,
     addEmi,
+    updateEmi,
     payEmiInstallment,
     deleteEmi,
     transactions,
