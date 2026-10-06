@@ -908,6 +908,7 @@ export const EditTransactionModal = ({ isOpen, onClose, editData }) => {
     date: '',
     category: '',
     account: '',
+    status: 'Completed',
   });
 
   useEffect(() => {
@@ -918,6 +919,7 @@ export const EditTransactionModal = ({ isOpen, onClose, editData }) => {
         date: editData.date || '',
         category: editData.category || '',
         account: editData.account || '',
+        status: editData.status || 'Completed',
       });
     }
   }, [isOpen, editData]);
@@ -1000,6 +1002,21 @@ export const EditTransactionModal = ({ isOpen, onClose, editData }) => {
               className="w-full bg-slate-50 dark:bg-[#0A0F1D] text-slate-900 dark:text-white border border-slate-200 dark:border-white/10 rounded-xl px-4 py-2.5 text-sm font-semibold focus:ring-2 focus:ring-purple-500/50 outline-none transition-all"
             />
           </div>
+        </div>
+
+        <div>
+          <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">
+            Status
+          </label>
+          <select
+            value={formData.status}
+            onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+            className="w-full bg-slate-50 dark:bg-[#0A0F1D] text-slate-900 dark:text-white border border-slate-200 dark:border-white/10 rounded-xl px-4 py-2.5 text-sm font-semibold focus:ring-2 focus:ring-purple-500/50 outline-none transition-all cursor-pointer"
+          >
+            <option value="Completed">Completed</option>
+            <option value="Pending">Pending</option>
+            <option value="Advance Payment">Advance Payment</option>
+          </select>
         </div>
 
         <div className="pt-4 flex justify-end">
