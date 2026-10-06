@@ -19,6 +19,7 @@ import {
   AddAccountModal,
   TransferFundsModal,
 } from './components/AddModals';
+import { PasscodeScreen } from './components/PasscodeScreen';
 import { CheckCircle2, Info, AlertTriangle } from 'lucide-react';
 
 const MainLayout = () => {
@@ -148,6 +149,12 @@ const MainLayout = () => {
 };
 
 export default function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  if (!isAuthenticated) {
+    return <PasscodeScreen onUnlock={() => setIsAuthenticated(true)} />;
+  }
+
   return (
     <AppProvider>
       <MainLayout />
