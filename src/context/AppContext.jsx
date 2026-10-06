@@ -188,7 +188,23 @@ export const AppProvider = ({ children }) => {
   }, [loans]);
 
   const upcomingEmis = useMemo(() => {
-    const allPending = loans.flatMap(l => l.schedule.filter(e => e.status === 'Pending').map(e => ({ ...e, loanName: l.loanName, lenderId: l.lenderId })));
+    const allPending = loans.flatMap(l => {
+      const completedCount = l.schedule.filter(s => s.status === 'Completed' || s.status === 'Advance Paid').length;
+      const completedAmount = l.schedule.filter(s => s.status === 'Completed' || s.status === 'Advance Paid').reduce((acc, curr) => acc + curr.amount, 0);
+
+      return l.schedule.filter(e => e.status === 'Pending').map(e => ({ 
+        ...e, 
+        id: e.emiId,
+        loanName: l.loanName, 
+        lenderId: l.lenderId,
+        lender: l.lender,
+        totalLoan: Number(l.totalAmount),
+        monthlyEmi: Number(e.amount),
+        tenorMonths: Number(l.totalEMIs),
+        paidMonths: completedCount,
+        paidAmount: completedAmount
+      }));
+    });
     return allPending.sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
   }, [loans]);
 
@@ -444,6 +460,33 @@ export const AppProvider = ({ children }) => {
     showToast(`EMI Status changed to ${newStatus}`);
   };
 
+  const payEmiInstallment = (emiId) => {
+    for (const loan of loans) {
+      if (loan.schedule.some(e => e.emiId === emiId)) {
+        updateEmiStatus(loan.id, emiId, 'Completed', { 
+           paymentDate: todayStr,
+           paymentMethod: 'Dashboard Quick Pay' 
+        });
+        
+        // Log transaction
+        const emi = loan.schedule.find(e => e.emiId === emiId);
+        const tx = {
+          id: `tx-${Date.now()}`,
+          title: `EMI Paid: ${loan.loanName}`,
+          type: 'Expense',
+          amount: Number(emi.amount),
+          date: todayStr,
+          account: 'Primary Account',
+          category: 'EMI Payment',
+          status: 'Completed',
+        };
+        setTransactions(prev => [tx, ...prev]);
+        
+        return;
+      }
+    }
+  };
+
   const addAccount = (acc) => {
     const accWithId = {
       ...acc,
@@ -563,6 +606,7 @@ export const AppProvider = ({ children }) => {
     updateLoan,
     deleteLoan,
     updateEmiStatus,
+    payEmiInstallment,
     transactions,
     updateTransaction,
     deleteTransaction,
