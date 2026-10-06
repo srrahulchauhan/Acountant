@@ -8,6 +8,7 @@ import {
   initialUdhaar,
   initialEmis,
   initialTransactions,
+  initialLenderApps,
 } from '../data/dummyData';
 
 const AppContext = createContext();
@@ -65,6 +66,7 @@ export const AppProvider = ({ children }) => {
   const [customers, setCustomers] = useState(() => getLocal('customers', initialCustomers));
   const [expenses, setExpenses] = useState(() => getLocal('expenses', initialExpenses));
   const [udhaar, setUdhaar] = useState(() => getLocal('udhaar', initialUdhaar));
+  const [lenderApps, setLenderApps] = useState(() => getLocal('lenderApps', initialLenderApps));
   const [emis, setEmis] = useState(() => getLocal('emis', initialEmis));
   const [transactions, setTransactions] = useState(() => getLocal('transactions', initialTransactions));
   const [searchQuery, setSearchQuery] = useState('');
@@ -77,6 +79,7 @@ export const AppProvider = ({ children }) => {
   useEffect(() => setLocal('customers', customers), [customers]);
   useEffect(() => setLocal('expenses', expenses), [expenses]);
   useEffect(() => setLocal('udhaar', udhaar), [udhaar]);
+  useEffect(() => setLocal('lenderApps', lenderApps), [lenderApps]);
   useEffect(() => setLocal('emis', emis), [emis]);
   useEffect(() => setLocal('transactions', transactions), [transactions]);
 
@@ -328,6 +331,21 @@ export const AppProvider = ({ children }) => {
     showToast('Customer profile deleted', 'info');
   };
 
+  const addLenderApp = (appData) => {
+    const appWithId = {
+      ...appData,
+      id: `lender-${Date.now()}`,
+    };
+    setLenderApps(prev => [...prev, appWithId]);
+    showToast(`Loan App "${appData.name}" created successfully!`);
+  };
+
+  const deleteLenderApp = (id) => {
+    setLenderApps(prev => prev.filter(app => app.id !== id));
+    // Optionally delete all EMIs associated with this lender, but for safety we won't right now
+    showToast('Loan App removed', 'info');
+  };
+
   const addEmi = (emiData) => {
     const emiWithId = {
       ...emiData,
@@ -489,6 +507,7 @@ export const AppProvider = ({ children }) => {
     setCustomers(initialCustomers);
     setExpenses(initialExpenses);
     setUdhaar(initialUdhaar);
+    setLenderApps(initialLenderApps);
     setEmis(initialEmis);
     setTransactions(initialTransactions);
     showToast('Demo data restored successfully!');
@@ -499,6 +518,7 @@ export const AppProvider = ({ children }) => {
     setCustomers([]);
     setExpenses([]);
     setUdhaar([]);
+    setLenderApps([]);
     setEmis([]);
     setTransactions([]);
     showToast('All records cleared (Empty state)', 'info');
@@ -523,6 +543,9 @@ export const AppProvider = ({ children }) => {
     addUdhaar,
     updateUdhaarStatus,
     deleteUdhaar,
+    lenderApps,
+    addLenderApp,
+    deleteLenderApp,
     emis,
     addEmi,
     updateEmi,

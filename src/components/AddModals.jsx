@@ -454,13 +454,14 @@ export const AddCustomerModal = ({ isOpen, onClose }) => {
 };
 
 export const AddEmiModal = ({ isOpen, onClose, editData }) => {
-  const { addEmi, updateEmi, currency } = useApp();
+  const { addEmi, updateEmi, currency, lenderApps } = useApp();
   const defaultDueDate = new Date(Date.now() + 15 * 24 * 60 * 60 * 1000)
     .toISOString()
     .split('T')[0];
 
   const [formData, setFormData] = useState({
     loanName: '',
+    lenderId: '',
     lender: '',
     totalLoan: '',
     monthlyEmi: '',
@@ -477,7 +478,8 @@ export const AddEmiModal = ({ isOpen, onClose, editData }) => {
       } else {
         setFormData({
           loanName: '',
-          lender: '',
+          lenderId: lenderApps.length > 0 ? lenderApps[0].id : '',
+          lender: lenderApps.length > 0 ? lenderApps[0].name : '',
           totalLoan: '',
           monthlyEmi: '',
           dueDate: defaultDueDate,
@@ -500,6 +502,7 @@ export const AddEmiModal = ({ isOpen, onClose, editData }) => {
     }
     setFormData({
       loanName: '',
+      lenderId: '',
       lender: '',
       totalLoan: '',
       monthlyEmi: '',
@@ -539,14 +542,24 @@ export const AddEmiModal = ({ isOpen, onClose, editData }) => {
             <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">
               Financier / Bank *
             </label>
-            <input
-              type="text"
-              placeholder="e.g. HDFC, Bajaj Finserv, SBI"
-              value={formData.lender}
-              onChange={(e) => setFormData({ ...formData, lender: e.target.value })}
+            <select
+              value={formData.lenderId}
+              onChange={(e) => {
+                const selectedApp = lenderApps.find(app => app.id === e.target.value);
+                setFormData({
+                  ...formData,
+                  lenderId: e.target.value,
+                  lender: selectedApp ? selectedApp.name : ''
+                });
+              }}
               className="w-full px-4 py-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-semibold text-slate-900 dark:text-white outline-none focus:border-purple-400"
               required
-            />
+            >
+              <option value="" disabled>Select Loan App / Bank</option>
+              {lenderApps.map(app => (
+                <option key={app.id} value={app.id}>{app.name}</option>
+              ))}
+            </select>
           </div>
 
           <div>
@@ -1025,6 +1038,83 @@ export const EditTransactionModal = ({ isOpen, onClose, editData }) => {
             className="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs shadow-soft transition-all"
           >
             Update Statement
+          </button>
+        </div>
+      </form>
+    </Modal>
+  );
+};
+
+export const AddLenderAppModal = ({ isOpen, onClose }) => {
+  const { addLenderApp } = useApp();
+  const [formData, setFormData] = useState({
+    name: '',
+    color: 'from-blue-500 to-indigo-600',
+    icon: 'Landmark',
+  });
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!formData.name) return;
+    addLenderApp(formData);
+    setFormData({ name: '', color: 'from-blue-500 to-indigo-600', icon: 'Landmark' });
+    onClose();
+  };
+
+  return (
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Add Loan App"
+      subtitle="Register a new financier or loan tracking app"
+    >
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">
+            App / Financier Name *
+          </label>
+          <input
+            type="text"
+            placeholder="e.g. Bajaj Finserv, ZestMoney, HDFC"
+            value={formData.name}
+            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            className="w-full px-4 py-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-semibold text-slate-900 dark:text-white outline-none focus:border-purple-400"
+            required
+            autoFocus
+          />
+        </div>
+
+        <div>
+          <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">
+            Theme Gradient
+          </label>
+          <select
+            value={formData.color}
+            onChange={(e) => setFormData({ ...formData, color: e.target.value })}
+            className="w-full px-4 py-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-semibold text-slate-900 dark:text-white outline-none focus:border-purple-400 cursor-pointer"
+          >
+            <option value="from-blue-600 to-indigo-700">Blue/Indigo</option>
+            <option value="from-rose-500 to-pink-600">Rose/Pink</option>
+            <option value="from-amber-500 to-orange-600">Amber/Orange</option>
+            <option value="from-emerald-500 to-teal-600">Emerald/Teal</option>
+            <option value="from-purple-500 to-fuchsia-600">Purple/Fuchsia</option>
+            <option value="from-slate-700 to-slate-900">Dark Slate</option>
+          </select>
+        </div>
+
+        <div className="pt-3 flex justify-end gap-2.5">
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            className="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs shadow-soft transition-all"
+          >
+            Add Loan App
           </button>
         </div>
       </form>

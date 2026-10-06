@@ -248,10 +248,17 @@ export const initialUdhaar = [
   },
 ];
 
+export const initialLenderApps = [
+  { id: "lender-1", name: "HDFC Auto Finance", icon: "Landmark", color: "from-blue-600 to-indigo-700" },
+  { id: "lender-2", name: "Bajaj Finserv", icon: "Smartphone", color: "from-rose-500 to-pink-600" },
+  { id: "lender-3", name: "Apple HDFC EasyEMI", icon: "Laptop", color: "from-slate-700 to-slate-900" },
+];
+
 export const initialEmis = [
   {
     id: "emi-1",
     loanName: "Hero Xtreme 160R Bike",
+    lenderId: "lender-1",
     lender: "HDFC Auto Finance",
     totalLoan: 120000,
     paidAmount: 54000,
@@ -266,6 +273,7 @@ export const initialEmis = [
   {
     id: "emi-2",
     loanName: "OnePlus 12 5G Phone",
+    lenderId: "lender-2",
     lender: "Bajaj Finserv",
     totalLoan: 50000,
     paidAmount: 26000,
@@ -280,6 +288,7 @@ export const initialEmis = [
   {
     id: "emi-3",
     loanName: "MacBook Air M2 Laptop",
+    lenderId: "lender-3",
     lender: "Apple HDFC EasyEMI",
     totalLoan: 80000,
     paidAmount: 40000,
