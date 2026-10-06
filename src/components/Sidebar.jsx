@@ -74,7 +74,7 @@ export const Sidebar = ({ isOpen, onClose }) => {
   const secondaryNavItems = [
     {
       id: 'statements',
-      label: 'Accounts & Wallets',
+      label: 'Statements',
       icon: Landmark,
       badge: null,
       color: 'text-emerald-500',

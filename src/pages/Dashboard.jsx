@@ -12,6 +12,8 @@ import {
   Flame,
   MessageCircle,
   PieChart as PieIcon,
+  Edit2,
+  Trash2,
 } from 'lucide-react';
 import {
   AreaChart,
@@ -529,13 +531,14 @@ export const Dashboard = ({ onOpenQuickAdd: _onOpenQuickAdd }) => {
                 <th className="pb-3">Account / Mode</th>
                 <th className="pb-3">Date</th>
                 <th className="pb-3 text-right pr-1">Amount</th>
+                <th className="pb-3 text-right pr-1">Action</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 dark:divide-white/[0.04]">
               {transactions.slice(0, 5).map((tx) => {
                 const isIncome = tx.type === 'Income';
                 return (
-                  <tr key={tx.id} className="hover:bg-slate-50/70 dark:hover:bg-white/[0.02] transition-colors">
+                  <tr key={tx.id} className="hover:bg-slate-50/70 dark:hover:bg-white/[0.02] transition-colors group">
                     <td className="py-3.5 pl-1 font-semibold text-slate-800 dark:text-slate-200">
                       <div className="flex items-center gap-2.5">
                         <div
@@ -571,6 +574,22 @@ export const Dashboard = ({ onOpenQuickAdd: _onOpenQuickAdd }) => {
                       >
                         {isIncome ? '+' : '-'}{currency}{Number(tx.amount).toLocaleString('en-IN')}
                       </span>
+                    </td>
+                    <td className="py-3.5 text-right pr-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="flex justify-end gap-1">
+                        <button
+                          title="Modify Transaction"
+                          className="p-1.5 rounded-lg text-slate-400 hover:text-amber-500 hover:bg-amber-50 dark:hover:bg-amber-500/10 transition-colors"
+                        >
+                          <Edit2 className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          title="Delete Transaction"
+                          className="p-1.5 rounded-lg text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-colors"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 );

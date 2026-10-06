@@ -15,6 +15,7 @@ import {
   ShieldCheck,
   Eye,
   EyeOff,
+  Trash2,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useApp } from '../context/AppContext';
@@ -29,6 +30,7 @@ export const AccountStatements = ({ onOpenAddModal, onOpenTransferModal }) => {
     searchQuery,
     isMasked,
     toggleMask,
+    deleteAccount,
   } = useApp();
 
   const [selectedAccount, setSelectedAccount] = useState('all');
@@ -143,6 +145,15 @@ export const AccountStatements = ({ onOpenAddModal, onOpenTransferModal }) => {
                 <span className="text-[9px] font-extrabold px-2 py-0.5 rounded-full bg-amber-400 text-slate-950 uppercase tracking-wider">
                   Primary
                 </span>
+              )}
+              {!acc.isPrimary && (
+                <button
+                  onClick={() => deleteAccount(acc.id)}
+                  className="p-1.5 rounded-xl text-slate-500 hover:text-rose-500 hover:bg-rose-500/10 transition-colors"
+                  title="Remove Account"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
               )}
             </div>
 
