@@ -17,6 +17,10 @@ import {
   ShieldCheck,
   Landmark,
   ArrowLeft,
+  Activity,
+  CheckCircle,
+  Clock3,
+  Zap,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useApp } from '../context/AppContext';
@@ -70,6 +74,16 @@ export const EmiPayments = ({ onOpenAddModal }) => {
     triggerCelebration();
   };
 
+  // Dashboard Stats
+  const pendingEmis = emis.filter(e => e.status === 'Pending' || e.status === 'Upcoming' || !e.status);
+  const advanceEmis = emis.filter(e => e.status === 'Advance Payment');
+  const completedEmis = emis.filter(e => e.status === 'Completed' || (e.paidAmount >= e.totalLoan && e.totalLoan > 0));
+
+  const totalPortfolioAmount = emis.reduce((sum, e) => sum + Number(e.totalLoan || 0), 0);
+  const pendingAmount = pendingEmis.reduce((sum, e) => sum + Math.max(0, Number(e.totalLoan) - Number(e.paidAmount)), 0);
+  const advanceAmount = advanceEmis.reduce((sum, e) => sum + Number(e.paidAmount || 0), 0);
+  const completedAmount = completedEmis.reduce((sum, e) => sum + Number(e.paidAmount || 0), 0);
+
   // View 1: Lender Apps Grid
   if (!selectedLenderId) {
     return (
@@ -94,6 +108,101 @@ export const EmiPayments = ({ onOpenAddModal }) => {
             <Plus className="w-4 h-4 stroke-[2.8]" />
             <span>Create Loan Account</span>
           </button>
+        </div>
+
+        {/* Live Dashboard */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+          {/* Total Portfolio */}
+          <div className="p-6 rounded-3xl bg-white dark:bg-[#0A0F1D] border border-slate-200 dark:border-white/10 shadow-soft relative overflow-hidden group">
+            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+              <Activity className="w-24 h-24 text-indigo-500" />
+            </div>
+            <div className="flex items-center gap-3 mb-4 relative z-10">
+              <div className="p-2.5 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400">
+                <Activity className="w-5 h-5" />
+              </div>
+              <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                Total Portfolio
+              </span>
+            </div>
+            <div className="relative z-10">
+              <div className="text-2xl sm:text-3xl font-black font-heading font-mono text-slate-900 dark:text-white mb-1">
+                {currency}{totalPortfolioAmount.toLocaleString('en-IN')}
+              </div>
+              <p className="text-xs font-semibold text-slate-400">
+                {emis.length} Active Loans
+              </p>
+            </div>
+          </div>
+
+          {/* Pending EMIs */}
+          <div className="p-6 rounded-3xl bg-white dark:bg-[#0A0F1D] border border-slate-200 dark:border-white/10 shadow-soft relative overflow-hidden group">
+            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+              <Clock3 className="w-24 h-24 text-amber-500" />
+            </div>
+            <div className="flex items-center gap-3 mb-4 relative z-10">
+              <div className="p-2.5 rounded-xl bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400">
+                <Clock3 className="w-5 h-5" />
+              </div>
+              <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                Pending EMIs
+              </span>
+            </div>
+            <div className="relative z-10">
+              <div className="text-2xl sm:text-3xl font-black font-heading font-mono text-amber-600 dark:text-amber-400 mb-1">
+                {currency}{pendingAmount.toLocaleString('en-IN')}
+              </div>
+              <p className="text-xs font-semibold text-slate-400">
+                {pendingEmis.length} Needs Attention
+              </p>
+            </div>
+          </div>
+
+          {/* Advance Payments */}
+          <div className="p-6 rounded-3xl bg-white dark:bg-[#0A0F1D] border border-slate-200 dark:border-white/10 shadow-soft relative overflow-hidden group">
+            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+              <Zap className="w-24 h-24 text-sky-500" />
+            </div>
+            <div className="flex items-center gap-3 mb-4 relative z-10">
+              <div className="p-2.5 rounded-xl bg-sky-50 dark:bg-sky-500/10 text-sky-600 dark:text-sky-400">
+                <Zap className="w-5 h-5" />
+              </div>
+              <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                Advance Paid
+              </span>
+            </div>
+            <div className="relative z-10">
+              <div className="text-2xl sm:text-3xl font-black font-heading font-mono text-sky-600 dark:text-sky-400 mb-1">
+                {currency}{advanceAmount.toLocaleString('en-IN')}
+              </div>
+              <p className="text-xs font-semibold text-slate-400">
+                {advanceEmis.length} Loans Pre-paid
+              </p>
+            </div>
+          </div>
+
+          {/* Completed Loans */}
+          <div className="p-6 rounded-3xl bg-white dark:bg-[#0A0F1D] border border-slate-200 dark:border-white/10 shadow-soft relative overflow-hidden group">
+            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+              <CheckCircle className="w-24 h-24 text-emerald-500" />
+            </div>
+            <div className="flex items-center gap-3 mb-4 relative z-10">
+              <div className="p-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+                <CheckCircle className="w-5 h-5" />
+              </div>
+              <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                Completed
+              </span>
+            </div>
+            <div className="relative z-10">
+              <div className="text-2xl sm:text-3xl font-black font-heading font-mono text-emerald-600 dark:text-emerald-400 mb-1">
+                {currency}{completedAmount.toLocaleString('en-IN')}
+              </div>
+              <p className="text-xs font-semibold text-slate-400">
+                {completedEmis.length} Loans Cleared
+              </p>
+            </div>
+          </div>
         </div>
 
         {lenderApps.length === 0 ? (
