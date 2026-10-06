@@ -6,7 +6,6 @@ import {
   initialCustomers,
   initialExpenses,
   initialUdhaar,
-  initialUdhaar,
   initialLoans,
   initialTransactions,
   initialLenderApps,
