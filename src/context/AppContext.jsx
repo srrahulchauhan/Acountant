@@ -431,6 +431,25 @@ export const AppProvider = ({ children }) => {
     showToast('Account removed', 'info');
   };
 
+  const updateTransaction = (id, updatedData) => {
+    setTransactions(prev => prev.map(tx => {
+      if (tx.id === id) {
+        return {
+          ...tx,
+          ...updatedData,
+          amount: Number(updatedData.amount || tx.amount),
+        };
+      }
+      return tx;
+    }));
+    showToast('Transaction statement updated');
+  };
+
+  const deleteTransaction = (id) => {
+    setTransactions(prev => prev.filter(tx => tx.id !== id));
+    showToast('Transaction statement removed', 'info');
+  };
+
   const transferFunds = (fromAccId, toAccId, amount, note = 'Internal transfer') => {
     const numAmount = Number(amount);
     if (!numAmount || numAmount <= 0) return;
@@ -510,6 +529,8 @@ export const AppProvider = ({ children }) => {
     payEmiInstallment,
     deleteEmi,
     transactions,
+    updateTransaction,
+    deleteTransaction,
     searchQuery,
     setSearchQuery,
     activeTab,

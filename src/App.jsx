@@ -18,6 +18,7 @@ import {
   AddEmiModal,
   AddAccountModal,
   TransferFundsModal,
+  EditTransactionModal,
 } from './components/AddModals';
 import { PasscodeScreen } from './components/PasscodeScreen';
 import { CheckCircle2, Info, AlertTriangle } from 'lucide-react';
@@ -122,6 +123,11 @@ const MainLayout = () => {
       <TransferFundsModal
         isOpen={modalState.isOpen && modalState.type === 'transfer'}
         onClose={closeModal}
+      />
+      <EditTransactionModal
+        isOpen={modalState.isOpen && modalState.type === 'editTransaction'}
+        onClose={closeModal}
+        editData={modalState.data}
       />
 
       {/* Floating Toast Notification */}
