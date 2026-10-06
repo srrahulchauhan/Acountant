@@ -453,22 +453,20 @@ export const AddCustomerModal = ({ isOpen, onClose }) => {
   );
 };
 
-export const AddEmiModal = ({ isOpen, onClose, editData }) => {
-  const { addEmi, updateEmi, currency, lenderApps } = useApp();
-  const defaultDueDate = new Date(Date.now() + 15 * 24 * 60 * 60 * 1000)
-    .toISOString()
-    .split('T')[0];
+export const AddLoanModal = ({ isOpen, onClose, editData }) => {
+  const { addLoan, updateLoan, currency, lenderApps } = useApp();
+  const defaultDueDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
 
   const [formData, setFormData] = useState({
     loanName: '',
     lenderId: '',
     lender: '',
-    totalLoan: '',
-    monthlyEmi: '',
-    dueDate: defaultDueDate,
-    tenorMonths: 12,
-    paidMonths: 0,
-    paidAmount: 0,
+    totalAmount: '',
+    emiAmount: '',
+    totalEMIs: 12,
+    firstEMIDate: defaultDueDate,
+    interestRate: 0,
+    notes: '',
   });
 
   useEffect(() => {
@@ -480,37 +478,26 @@ export const AddEmiModal = ({ isOpen, onClose, editData }) => {
           loanName: '',
           lenderId: lenderApps.length > 0 ? lenderApps[0].id : '',
           lender: lenderApps.length > 0 ? lenderApps[0].name : '',
-          totalLoan: '',
-          monthlyEmi: '',
-          dueDate: defaultDueDate,
-          tenorMonths: 12,
-          paidMonths: 0,
-          paidAmount: 0,
+          totalAmount: '',
+          emiAmount: '',
+          totalEMIs: 12,
+          firstEMIDate: defaultDueDate,
+          interestRate: 0,
+          notes: '',
         });
       }
     }
-  }, [isOpen, editData, defaultDueDate]);
+  }, [isOpen, editData, defaultDueDate, lenderApps]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!formData.loanName || !formData.totalLoan || !formData.monthlyEmi) return;
+    if (!formData.loanName || !formData.totalAmount || !formData.emiAmount) return;
 
     if (editData) {
-      updateEmi(editData.id, formData);
+      updateLoan(editData.id, formData);
     } else {
-      addEmi(formData);
+      addLoan(formData);
     }
-    setFormData({
-      loanName: '',
-      lenderId: '',
-      lender: '',
-      totalLoan: '',
-      monthlyEmi: '',
-      dueDate: defaultDueDate,
-      tenorMonths: 12,
-      paidMonths: 0,
-      paidAmount: 0,
-    });
     onClose();
   };
 
@@ -518,8 +505,8 @@ export const AddEmiModal = ({ isOpen, onClose, editData }) => {
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title={editData ? "Edit EMI Loan Payment" : "Add EMI Loan Payment"}
-      subtitle="Register bike, phone, laptop or student gadget EMI plans"
+      title={editData ? "Edit Loan" : "Create New Loan"}
+      subtitle="The system will automatically generate the EMI schedule"
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
@@ -528,7 +515,7 @@ export const AddEmiModal = ({ isOpen, onClose, editData }) => {
           </label>
           <input
             type="text"
-            placeholder="e.g. Royal Enfield Bike, iPhone 16, Dell XPS"
+            placeholder="e.g. Royal Enfield Bike, iPhone 16"
             value={formData.loanName}
             onChange={(e) => setFormData({ ...formData, loanName: e.target.value })}
             className="w-full px-4 py-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-semibold text-slate-900 dark:text-white outline-none focus:border-purple-400"
@@ -555,7 +542,7 @@ export const AddEmiModal = ({ isOpen, onClose, editData }) => {
               className="w-full px-4 py-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-semibold text-slate-900 dark:text-white outline-none focus:border-purple-400"
               required
             >
-              <option value="" disabled>Select Loan App / Bank</option>
+              <option value="" disabled>Select Bank</option>
               {lenderApps.map(app => (
                 <option key={app.id} value={app.id}>{app.name}</option>
               ))}
@@ -569,8 +556,8 @@ export const AddEmiModal = ({ isOpen, onClose, editData }) => {
             <input
               type="number"
               placeholder="e.g. 150000"
-              value={formData.totalLoan}
-              onChange={(e) => setFormData({ ...formData, totalLoan: e.target.value })}
+              value={formData.totalAmount}
+              onChange={(e) => setFormData({ ...formData, totalAmount: e.target.value })}
               className="w-full px-4 py-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-semibold text-slate-900 dark:text-white outline-none focus:border-purple-400"
               required
             />
@@ -585,8 +572,8 @@ export const AddEmiModal = ({ isOpen, onClose, editData }) => {
             <input
               type="number"
               placeholder="e.g. 4500"
-              value={formData.monthlyEmi}
-              onChange={(e) => setFormData({ ...formData, monthlyEmi: e.target.value })}
+              value={formData.emiAmount}
+              onChange={(e) => setFormData({ ...formData, emiAmount: e.target.value })}
               className="w-full px-4 py-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-semibold text-slate-900 dark:text-white outline-none focus:border-purple-400"
               required
             />
@@ -594,13 +581,14 @@ export const AddEmiModal = ({ isOpen, onClose, editData }) => {
 
           <div>
             <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">
-              Next EMI Due Date
+              Total EMIs (Tenure) *
             </label>
             <input
-              type="date"
-              value={formData.dueDate}
-              onChange={(e) => setFormData({ ...formData, dueDate: e.target.value })}
+              type="number"
+              value={formData.totalEMIs}
+              onChange={(e) => setFormData({ ...formData, totalEMIs: Number(e.target.value) })}
               className="w-full px-4 py-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-semibold text-slate-900 dark:text-white outline-none focus:border-purple-400"
+              required
             />
           </div>
         </div>
@@ -608,70 +596,29 @@ export const AddEmiModal = ({ isOpen, onClose, editData }) => {
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">
-              Total Tenor (Months)
+              First EMI Date *
             </label>
             <input
-              type="number"
-              value={formData.tenorMonths}
-              onChange={(e) => setFormData({ ...formData, tenorMonths: Number(e.target.value) })}
+              type="date"
+              value={formData.firstEMIDate}
+              onChange={(e) => setFormData({ ...formData, firstEMIDate: e.target.value })}
               className="w-full px-4 py-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-semibold text-slate-900 dark:text-white outline-none focus:border-purple-400"
+              required
             />
           </div>
-
           <div>
             <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">
-              Months Already Paid
+              Notes
             </label>
             <input
-              type="number"
-              value={formData.paidMonths}
-              onChange={(e) => {
-                const paidM = Number(e.target.value);
-                const calcPaidAmt = paidM * Number(formData.monthlyEmi || 0);
-                setFormData({ ...formData, paidMonths: paidM, paidAmount: calcPaidAmt });
-              }}
+              type="text"
+              placeholder="Optional"
+              value={formData.notes}
+              onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
               className="w-full px-4 py-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-semibold text-slate-900 dark:text-white outline-none focus:border-purple-400"
             />
           </div>
         </div>
-
-        {editData && (
-          <div className="grid grid-cols-2 gap-3 p-3 rounded-2xl bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20">
-            <div>
-              <label className="block text-[11px] font-extrabold uppercase tracking-wider text-amber-800 dark:text-amber-400 mb-1">
-                Advance Paid ({currency})
-              </label>
-              <input
-                type="number"
-                value={formData.paidAmount}
-                onChange={(e) => setFormData({ ...formData, paidAmount: Number(e.target.value) })}
-                className="w-full px-4 py-2 rounded-xl bg-white dark:bg-[#0A0F1D] border border-amber-200 dark:border-amber-500/20 text-sm font-semibold text-slate-900 dark:text-white outline-none focus:border-amber-400"
-              />
-            </div>
-            
-            <div className="flex flex-col justify-end pb-1">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={formData.status === 'Completed' || (formData.paidAmount >= formData.totalLoan && formData.totalLoan > 0)}
-                  onChange={(e) => {
-                    const isCompleted = e.target.checked;
-                    setFormData({
-                      ...formData,
-                      status: isCompleted ? 'Completed' : 'Upcoming',
-                      paidAmount: isCompleted ? Math.max(formData.paidAmount, formData.totalLoan) : formData.paidAmount,
-                      paidMonths: isCompleted ? Math.max(formData.paidMonths, formData.tenorMonths) : formData.paidMonths
-                    });
-                  }}
-                  className="w-4 h-4 text-purple-600 rounded border-slate-300 focus:ring-purple-500"
-                />
-                <span className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                  Mark as Fully Paid
-                </span>
-              </label>
-            </div>
-          </div>
-        )}
 
         <div className="pt-3 flex items-center justify-end gap-2.5">
           <button
@@ -685,7 +632,166 @@ export const AddEmiModal = ({ isOpen, onClose, editData }) => {
             type="submit"
             className="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs shadow-soft transition-all"
           >
-            {editData ? "Update Loan" : "Save Loan"}
+            {editData ? "Update Loan" : "Create Schedule"}
+          </button>
+        </div>
+      </form>
+    </Modal>
+  );
+};
+
+export const EditEmiModal = ({ isOpen, onClose, emiData, loanId }) => {
+  const { updateEmiStatus, currency } = useApp();
+
+  const [formData, setFormData] = useState({
+    amount: '',
+    dueDate: '',
+    paymentDate: '',
+    status: 'Pending',
+    paymentMethod: '',
+    transactionId: '',
+    notes: '',
+  });
+
+  useEffect(() => {
+    if (isOpen && emiData) {
+      setFormData({
+        amount: emiData.amount,
+        dueDate: emiData.dueDate,
+        paymentDate: emiData.paymentDate || new Date().toISOString().split('T')[0],
+        status: emiData.status,
+        paymentMethod: emiData.paymentMethod || 'UPI',
+        transactionId: emiData.transactionId || '',
+        notes: emiData.notes || '',
+      });
+    }
+  }, [isOpen, emiData]);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (formData.status !== emiData.status) {
+      const confirmMsg = "Are you sure you want to change this EMI status?";
+      if (!window.confirm(confirmMsg)) return;
+    }
+    
+    // Call the context function to update
+    updateEmiStatus(loanId, emiData.emiId, formData.status, {
+      amount: Number(formData.amount),
+      dueDate: formData.dueDate,
+      paymentDate: formData.paymentDate,
+      paymentMethod: formData.paymentMethod,
+      transactionId: formData.transactionId,
+      notes: formData.notes
+    });
+
+    onClose();
+  };
+
+  return (
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Edit EMI Details"
+      subtitle={`EMI ${emiData?.emiNumber}`}
+    >
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">
+              EMI Amount ({currency})
+            </label>
+            <input
+              type="number"
+              value={formData.amount}
+              onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+              className="w-full px-4 py-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-semibold text-slate-900 dark:text-white outline-none focus:border-purple-400"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">
+              Status
+            </label>
+            <select
+              value={formData.status}
+              onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+              className="w-full px-4 py-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-semibold text-slate-900 dark:text-white outline-none focus:border-purple-400"
+            >
+              <option value="Pending">Pending</option>
+              <option value="Advance Paid">Advance Paid</option>
+              <option value="Completed">Completed</option>
+            </select>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">
+              Due Date
+            </label>
+            <input
+              type="date"
+              value={formData.dueDate}
+              onChange={(e) => setFormData({ ...formData, dueDate: e.target.value })}
+              className="w-full px-4 py-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-semibold text-slate-900 dark:text-white outline-none focus:border-purple-400"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">
+              Payment Date
+            </label>
+            <input
+              type="date"
+              value={formData.paymentDate}
+              disabled={formData.status === 'Pending'}
+              onChange={(e) => setFormData({ ...formData, paymentDate: e.target.value })}
+              className="w-full px-4 py-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-semibold text-slate-900 dark:text-white outline-none disabled:opacity-50"
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">
+              Payment Method
+            </label>
+            <select
+              value={formData.paymentMethod}
+              onChange={(e) => setFormData({ ...formData, paymentMethod: e.target.value })}
+              className="w-full px-4 py-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-semibold text-slate-900 dark:text-white outline-none"
+            >
+              <option value="UPI">UPI</option>
+              <option value="Bank Transfer">Bank Transfer</option>
+              <option value="Card">Card</option>
+              <option value="Cash">Cash</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">
+              Txn ID (Optional)
+            </label>
+            <input
+              type="text"
+              value={formData.transactionId}
+              onChange={(e) => setFormData({ ...formData, transactionId: e.target.value })}
+              className="w-full px-4 py-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-semibold text-slate-900 dark:text-white outline-none"
+            />
+          </div>
+        </div>
+
+        <div className="pt-3 flex items-center justify-end gap-2.5">
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            className="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs shadow-soft transition-all"
+          >
+            Save Changes
           </button>
         </div>
       </form>

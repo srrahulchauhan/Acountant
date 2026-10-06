@@ -6,7 +6,8 @@ import {
   initialCustomers,
   initialExpenses,
   initialUdhaar,
-  initialEmis,
+  initialUdhaar,
+  initialLoans,
   initialTransactions,
   initialLenderApps,
 } from '../data/dummyData';
@@ -67,7 +68,7 @@ export const AppProvider = ({ children }) => {
   const [expenses, setExpenses] = useState(() => getLocal('expenses', initialExpenses));
   const [udhaar, setUdhaar] = useState(() => getLocal('udhaar', initialUdhaar));
   const [lenderApps, setLenderApps] = useState(() => getLocal('lenderApps', initialLenderApps));
-  const [emis, setEmis] = useState(() => getLocal('emis', initialEmis));
+  const [loans, setLoans] = useState(() => getLocal('loans', initialLoans));
   const [transactions, setTransactions] = useState(() => getLocal('transactions', initialTransactions));
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -80,8 +81,29 @@ export const AppProvider = ({ children }) => {
   useEffect(() => setLocal('expenses', expenses), [expenses]);
   useEffect(() => setLocal('udhaar', udhaar), [udhaar]);
   useEffect(() => setLocal('lenderApps', lenderApps), [lenderApps]);
-  useEffect(() => setLocal('emis', emis), [emis]);
+  useEffect(() => setLocal('loans', loans), [loans]);
   useEffect(() => setLocal('transactions', transactions), [transactions]);
+
+  // Auto-complete Advance Paid EMIs based on current date
+  useEffect(() => {
+    let hasChanges = false;
+    const newLoans = loans.map(loan => {
+      let loanChanged = false;
+      const newSchedule = loan.schedule.map(emi => {
+        if (emi.status === 'Advance Paid' && emi.dueDate <= todayStr) {
+          hasChanges = true;
+          loanChanged = true;
+          return { ...emi, status: 'Completed', completionDate: todayStr };
+        }
+        return emi;
+      });
+      return loanChanged ? { ...loan, schedule: newSchedule } : loan;
+    });
+
+    if (hasChanges) {
+      setLoans(newLoans);
+    }
+  }, [loans, todayStr]);
 
   // Flash toast notification helper
   const showToast = (message, type = 'success') => {
@@ -148,28 +170,28 @@ export const AppProvider = ({ children }) => {
   }, [udhaar]);
 
   const totalLoan = useMemo(() => {
-    return emis.reduce((sum, emi) => sum + Number(emi.totalLoan || 0), 0);
-  }, [emis]);
+    return loans.reduce((sum, loan) => sum + Number(loan.totalAmount || 0), 0);
+  }, [loans]);
 
   const paidEMI = useMemo(() => {
-    return emis.reduce((sum, emi) => sum + Number(emi.paidAmount || 0), 0);
-  }, [emis]);
+    return loans.reduce((sum, loan) => {
+      const loanPaid = loan.schedule.reduce((s, emi) => s + (emi.status === 'Completed' || emi.status === 'Advance Paid' ? Number(emi.amount) : 0), 0);
+      return sum + loanPaid;
+    }, 0);
+  }, [loans]);
 
   const remainingEMI = useMemo(() => {
     return Math.max(0, totalLoan - paidEMI);
   }, [totalLoan, paidEMI]);
 
   const monthlyEmiTotal = useMemo(() => {
-    return emis
-      .filter(e => e.status !== 'Completed')
-      .reduce((sum, e) => sum + Number(e.monthlyEmi || 0), 0);
-  }, [emis]);
+    return loans.reduce((sum, loan) => sum + Number(loan.emiAmount || 0), 0);
+  }, [loans]);
 
   const upcomingEmis = useMemo(() => {
-    return emis
-      .filter(e => e.status !== 'Completed')
-      .sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
-  }, [emis]);
+    const allPending = loans.flatMap(l => l.schedule.filter(e => e.status === 'Pending').map(e => ({ ...e, loanName: l.loanName, lenderId: l.lenderId })));
+    return allPending.sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
+  }, [loans]);
 
   // Expenses grouped by category
   const categoryExpenses = useMemo(() => {
@@ -346,90 +368,81 @@ export const AppProvider = ({ children }) => {
     showToast('Loan App removed', 'info');
   };
 
-  const addEmi = (emiData) => {
-    const emiWithId = {
-      ...emiData,
-      id: `emi-${Date.now()}`,
-      totalLoan: Number(emiData.totalLoan),
-      monthlyEmi: Number(emiData.monthlyEmi),
-      paidAmount: Number(emiData.paidAmount || 0),
-      tenorMonths: Number(emiData.tenorMonths || 12),
-      paidMonths: Number(emiData.paidMonths || 0),
-      status: 'Upcoming',
+  const addLoan = (loanData) => {
+    const schedule = [];
+    const firstDate = new Date(loanData.firstEMIDate);
+    
+    for (let i = 1; i <= loanData.totalEMIs; i++) {
+      const dueDate = new Date(firstDate);
+      dueDate.setMonth(dueDate.getMonth() + (i - 1));
+      
+      schedule.push({
+        emiId: `emi-${Date.now()}-${i}`,
+        emiNumber: i,
+        amount: Number(loanData.emiAmount),
+        dueDate: dueDate.toISOString().split('T')[0],
+        paymentDate: null,
+        completionDate: null,
+        status: "Pending",
+        paymentMethod: "",
+        transactionId: "",
+        notes: ""
+      });
+    }
+
+    const loanWithId = {
+      ...loanData,
+      id: `loan-${Date.now()}`,
+      totalAmount: Number(loanData.totalAmount),
+      emiAmount: Number(loanData.emiAmount),
+      totalEMIs: Number(loanData.totalEMIs),
+      createdAt: todayStr,
+      updatedAt: todayStr,
+      schedule
     };
-    setEmis(prev => [emiWithId, ...prev]);
-    showToast(`Loan "${emiData.loanName}" registered successfully!`);
+    
+    setLoans(prev => [loanWithId, ...prev]);
+    showToast(`Loan "${loanData.loanName}" registered successfully!`);
   };
 
-  const updateEmi = (id, updatedData) => {
-    setEmis(prev => prev.map(emi => {
-      if (emi.id === id) {
-        return {
-          ...emi,
-          ...updatedData,
-          totalLoan: Number(updatedData.totalLoan || emi.totalLoan),
-          monthlyEmi: Number(updatedData.monthlyEmi || emi.monthlyEmi),
-          paidAmount: Number(updatedData.paidAmount ?? emi.paidAmount),
-          tenorMonths: Number(updatedData.tenorMonths || emi.tenorMonths),
-          paidMonths: Number(updatedData.paidMonths ?? emi.paidMonths),
-        };
-      }
-      return emi;
-    }));
+  const updateLoan = (id, updatedData) => {
+    setLoans(prev => prev.map(loan => loan.id === id ? { ...loan, ...updatedData, updatedAt: todayStr } : loan));
     showToast(`Loan updated successfully!`);
   };
 
-  const payEmiInstallment = (emiId) => {
-    let paidAmount = 0;
-    let loanName = '';
-
-    setEmis(prev => prev.map(item => {
-      if (item.id === emiId) {
-        paidAmount = item.monthlyEmi;
-        loanName = item.loanName;
-        const newPaidMonths = item.paidMonths + 1;
-        const newPaidAmount = item.paidAmount + item.monthlyEmi;
-        const isComplete = newPaidMonths >= item.tenorMonths || newPaidAmount >= item.totalLoan;
-        
-        return {
-          ...item,
-          paidMonths: newPaidMonths,
-          paidAmount: Math.min(newPaidAmount, item.totalLoan),
-          status: isComplete ? 'Completed' : 'Upcoming',
-          dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        };
-      }
-      return item;
-    }));
-
-    // Deduct from primary bank account if possible
-    setAccounts(prev => prev.map(acc => {
-      if (acc.isPrimary) {
-        return { ...acc, balance: Math.max(0, acc.balance - paidAmount) };
-      }
-      return acc;
-    }));
-
-    // Log transaction
-    const tx = {
-      id: `tx-${Date.now()}`,
-      title: `EMI Paid: ${loanName}`,
-      type: 'Expense',
-      amount: paidAmount,
-      date: todayStr,
-      account: 'Primary Account',
-      category: 'EMI Payment',
-      status: 'Completed',
-    };
-    setTransactions(prev => [tx, ...prev]);
-
-    triggerCelebration();
-    showToast(`🎉 EMI of ₹${paidAmount} marked as paid!`);
+  const deleteLoan = (id) => {
+    setLoans(prev => prev.filter(l => l.id !== id));
+    showToast('Loan record removed', 'info');
   };
 
-  const deleteEmi = (id) => {
-    setEmis(prev => prev.filter(e => e.id !== id));
-    showToast('EMI record removed', 'info');
+  const updateEmiStatus = (loanId, emiId, newStatus, extraData = {}) => {
+    setLoans(prev => prev.map(loan => {
+      if (loan.id === loanId) {
+        const newSchedule = loan.schedule.map(emi => {
+          if (emi.emiId === emiId) {
+            let updates = { status: newStatus };
+            if (newStatus === 'Advance Paid' || newStatus === 'Completed') {
+              if (!emi.paymentDate) updates.paymentDate = extraData.paymentDate || todayStr;
+            } else {
+              updates.paymentDate = null;
+              updates.completionDate = null;
+            }
+            if (newStatus === 'Completed') {
+              updates.completionDate = todayStr;
+            }
+            return { ...emi, ...updates, ...extraData };
+          }
+          return emi;
+        });
+        return { ...loan, schedule: newSchedule, updatedAt: todayStr };
+      }
+      return loan;
+    }));
+    
+    if (newStatus === 'Completed' || newStatus === 'Advance Paid') {
+      triggerCelebration();
+    }
+    showToast(`EMI Status changed to ${newStatus}`);
   };
 
   const addAccount = (acc) => {
@@ -508,7 +521,7 @@ export const AppProvider = ({ children }) => {
     setExpenses(initialExpenses);
     setUdhaar(initialUdhaar);
     setLenderApps(initialLenderApps);
-    setEmis(initialEmis);
+    setLoans(initialLoans);
     setTransactions(initialTransactions);
     showToast('Demo data restored successfully!');
   };
@@ -519,7 +532,7 @@ export const AppProvider = ({ children }) => {
     setExpenses([]);
     setUdhaar([]);
     setLenderApps([]);
-    setEmis([]);
+    setLoans([]);
     setTransactions([]);
     showToast('All records cleared (Empty state)', 'info');
   };
@@ -546,11 +559,11 @@ export const AppProvider = ({ children }) => {
     lenderApps,
     addLenderApp,
     deleteLenderApp,
-    emis,
-    addEmi,
-    updateEmi,
-    payEmiInstallment,
-    deleteEmi,
+    loans,
+    addLoan,
+    updateLoan,
+    deleteLoan,
+    updateEmiStatus,
     transactions,
     updateTransaction,
     deleteTransaction,

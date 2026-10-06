@@ -15,7 +15,8 @@ import {
   AddExpenseModal,
   AddUdhaarModal,
   AddCustomerModal,
-  AddEmiModal,
+  AddLoanModal,
+  EditEmiModal,
   AddAccountModal,
   TransferFundsModal,
   EditTransactionModal,
@@ -112,10 +113,16 @@ const MainLayout = () => {
         isOpen={modalState.isOpen && modalState.type === 'customer'}
         onClose={closeModal}
       />
-      <AddEmiModal
+      <AddLoanModal
         isOpen={modalState.isOpen && modalState.type === 'emi'}
         onClose={closeModal}
         editData={modalState.data}
+      />
+      <EditEmiModal
+        isOpen={modalState.isOpen && modalState.type === 'editEmi'}
+        onClose={closeModal}
+        emiData={modalState.data?.emiData}
+        loanId={modalState.data?.loanId}
       />
       <AddAccountModal
         isOpen={modalState.isOpen && modalState.type === 'account'}

@@ -254,52 +254,149 @@ export const initialLenderApps = [
   { id: "lender-3", name: "Apple HDFC EasyEMI", icon: "Laptop", color: "from-slate-700 to-slate-900" },
 ];
 
-export const initialEmis = [
+export const initialLoans = [
   {
-    id: "emi-1",
+    id: "loan-1",
     loanName: "Hero Xtreme 160R Bike",
     lenderId: "lender-1",
-    lender: "HDFC Auto Finance",
-    totalLoan: 120000,
-    paidAmount: 54000,
-    monthlyEmi: 4500,
-    dueDate: getTodayStr(5), // 5 days from now
-    tenorMonths: 24,
-    paidMonths: 12,
+    totalAmount: 120000,
+    emiAmount: 4500,
+    totalEMIs: 24,
     interestRate: 9.5,
-    status: "Upcoming",
-    iconName: "Bike",
+    startDate: getTodayStr(-180),
+    firstEMIDate: getTodayStr(-150),
+    monthlyDueDay: 10,
+    notes: "Bike loan for daily commute",
+    createdAt: getTodayStr(-180),
+    updatedAt: getTodayStr(0),
+    schedule: [
+      {
+        emiId: "emi-1-1",
+        emiNumber: 1,
+        amount: 4500,
+        dueDate: getTodayStr(-150),
+        paymentDate: getTodayStr(-152),
+        completionDate: getTodayStr(-150),
+        status: "Completed",
+        paymentMethod: "Bank Transfer",
+        transactionId: "TXN12345",
+        notes: "Paid on time"
+      },
+      {
+        emiId: "emi-1-2",
+        emiNumber: 2,
+        amount: 4500,
+        dueDate: getTodayStr(-120),
+        paymentDate: getTodayStr(-120),
+        completionDate: getTodayStr(-120),
+        status: "Completed",
+        paymentMethod: "UPI",
+        transactionId: "TXN12346",
+        notes: ""
+      },
+      {
+        emiId: "emi-1-3",
+        emiNumber: 3,
+        amount: 4500,
+        dueDate: getTodayStr(-90),
+        paymentDate: getTodayStr(-95),
+        completionDate: getTodayStr(-90),
+        status: "Completed",
+        paymentMethod: "UPI",
+        transactionId: "TXN12347",
+        notes: ""
+      },
+      {
+        emiId: "emi-1-4",
+        emiNumber: 4,
+        amount: 4500,
+        dueDate: getTodayStr(-60),
+        paymentDate: getTodayStr(-61),
+        completionDate: getTodayStr(-60),
+        status: "Completed",
+        paymentMethod: "Bank Transfer",
+        transactionId: "TXN12348",
+        notes: ""
+      },
+      {
+        emiId: "emi-1-5",
+        emiNumber: 5,
+        amount: 4500,
+        dueDate: getTodayStr(-30),
+        paymentDate: getTodayStr(-30),
+        completionDate: getTodayStr(-30),
+        status: "Completed",
+        paymentMethod: "Card",
+        transactionId: "TXN12349",
+        notes: ""
+      },
+      {
+        emiId: "emi-1-6",
+        emiNumber: 6,
+        amount: 4500,
+        dueDate: getTodayStr(5),
+        paymentDate: getTodayStr(-2),
+        completionDate: null,
+        status: "Advance Paid",
+        paymentMethod: "UPI",
+        transactionId: "TXN12350",
+        notes: "Paid early this month"
+      },
+      {
+        emiId: "emi-1-7",
+        emiNumber: 7,
+        amount: 4500,
+        dueDate: getTodayStr(35),
+        paymentDate: null,
+        completionDate: null,
+        status: "Pending",
+        paymentMethod: "",
+        transactionId: "",
+        notes: ""
+      }
+    ]
   },
   {
-    id: "emi-2",
+    id: "loan-2",
     loanName: "OnePlus 12 5G Phone",
     lenderId: "lender-2",
-    lender: "Bajaj Finserv",
-    totalLoan: 50000,
-    paidAmount: 26000,
-    monthlyEmi: 2000,
-    dueDate: getTodayStr(12),
-    tenorMonths: 18,
-    paidMonths: 13,
+    totalAmount: 50000,
+    emiAmount: 2000,
+    totalEMIs: 18,
     interestRate: 0,
-    status: "Pending",
-    iconName: "Smartphone",
-  },
-  {
-    id: "emi-3",
-    loanName: "MacBook Air M2 Laptop",
-    lenderId: "lender-3",
-    lender: "Apple HDFC EasyEMI",
-    totalLoan: 80000,
-    paidAmount: 40000,
-    monthlyEmi: 4000,
-    dueDate: getTodayStr(20),
-    tenorMonths: 20,
-    paidMonths: 10,
-    interestRate: 8.0,
-    status: "Pending",
-    iconName: "Laptop",
-  },
+    startDate: getTodayStr(-30),
+    firstEMIDate: getTodayStr(12),
+    monthlyDueDay: 15,
+    notes: "No cost EMI",
+    createdAt: getTodayStr(-30),
+    updatedAt: getTodayStr(0),
+    schedule: [
+      {
+        emiId: "emi-2-1",
+        emiNumber: 1,
+        amount: 2000,
+        dueDate: getTodayStr(12),
+        paymentDate: null,
+        completionDate: null,
+        status: "Pending",
+        paymentMethod: "",
+        transactionId: "",
+        notes: ""
+      },
+      {
+        emiId: "emi-2-2",
+        emiNumber: 2,
+        amount: 2000,
+        dueDate: getTodayStr(42),
+        paymentDate: null,
+        completionDate: null,
+        status: "Pending",
+        paymentMethod: "",
+        transactionId: "",
+        notes: ""
+      }
+    ]
+  }
 ];
 
 export const initialTransactions = [
