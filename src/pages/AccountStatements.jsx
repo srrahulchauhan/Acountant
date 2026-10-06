@@ -14,8 +14,8 @@ import {
   CreditCard,
   ShieldCheck,
   Eye,
-  EyeOff,
   Trash2,
+  Edit2,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useApp } from '../context/AppContext';
@@ -31,6 +31,7 @@ export const AccountStatements = ({ onOpenAddModal, onOpenTransferModal }) => {
     isMasked,
     toggleMask,
     deleteAccount,
+    deleteTransaction,
   } = useApp();
 
   const [selectedAccount, setSelectedAccount] = useState('all');
@@ -146,15 +147,6 @@ export const AccountStatements = ({ onOpenAddModal, onOpenTransferModal }) => {
                   Primary
                 </span>
               )}
-              {!acc.isPrimary && (
-                <button
-                  onClick={() => deleteAccount(acc.id)}
-                  className="p-1.5 rounded-xl text-slate-500 hover:text-rose-500 hover:bg-rose-500/10 transition-colors"
-                  title="Remove Account"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
-              )}
             </div>
 
             {/* Smart Card Chip Graphic */}
@@ -258,6 +250,7 @@ export const AccountStatements = ({ onOpenAddModal, onOpenTransferModal }) => {
                   <th className="pb-3.5">Account / Channel</th>
                   <th className="pb-3.5">Type</th>
                   <th className="pb-3.5 text-right pr-2">Amount</th>
+                  <th className="pb-3.5 text-right pr-2">Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-white/[0.04]">
@@ -267,7 +260,7 @@ export const AccountStatements = ({ onOpenAddModal, onOpenTransferModal }) => {
                   return (
                     <tr
                       key={tx.id}
-                      className="hover:bg-slate-50/80 dark:hover:bg-white/[0.02] transition-colors"
+                      className="hover:bg-slate-50/80 dark:hover:bg-white/[0.02] transition-colors group"
                     >
                       <td className="py-3.5 pl-2 text-slate-400 font-mono text-[11px] whitespace-nowrap">
                         {tx.date}
@@ -308,6 +301,24 @@ export const AccountStatements = ({ onOpenAddModal, onOpenTransferModal }) => {
                         >
                           {isIncome ? '+' : isTransfer ? '⇄ ' : '-'}{currency}{Number(tx.amount).toLocaleString('en-IN')}
                         </span>
+                      </td>
+                      <td className="py-3.5 text-right pr-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div className="flex justify-end gap-1">
+                          <button
+                            onClick={() => onOpenAddModal('editTransaction', tx)}
+                            title="Modify Transaction"
+                            className="p-1.5 rounded-lg text-slate-400 hover:text-amber-500 hover:bg-amber-50 dark:hover:bg-amber-500/10 transition-colors"
+                          >
+                            <Edit2 className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            onClick={() => deleteTransaction(tx.id)}
+                            title="Delete Transaction"
+                            className="p-1.5 rounded-lg text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-colors"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   );

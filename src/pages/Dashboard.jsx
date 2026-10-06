@@ -46,6 +46,7 @@ export const Dashboard = ({ onOpenQuickAdd: _onOpenQuickAdd }) => {
     udhaar,
     payEmiInstallment,
     setActiveTab,
+    deleteTransaction,
   } = useApp();
 
   const COLORS = ['#F59E0B', '#0284C7', '#EC4899', '#8B5CF6', '#10B981', '#F43F5E', '#3B82F6', '#64748B'];
@@ -578,12 +579,14 @@ export const Dashboard = ({ onOpenQuickAdd: _onOpenQuickAdd }) => {
                     <td className="py-3.5 text-right pr-1 opacity-0 group-hover:opacity-100 transition-opacity">
                       <div className="flex justify-end gap-1">
                         <button
+                          onClick={() => _onOpenQuickAdd('editTransaction', tx)}
                           title="Modify Transaction"
                           className="p-1.5 rounded-lg text-slate-400 hover:text-amber-500 hover:bg-amber-50 dark:hover:bg-amber-500/10 transition-colors"
                         >
                           <Edit2 className="w-3.5 h-3.5" />
                         </button>
                         <button
+                          onClick={() => deleteTransaction(tx.id)}
                           title="Delete Transaction"
                           className="p-1.5 rounded-lg text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-colors"
                         >

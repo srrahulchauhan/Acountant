@@ -899,3 +899,118 @@ export const TransferFundsModal = ({ isOpen, onClose }) => {
     </Modal>
   );
 };
+
+export const EditTransactionModal = ({ isOpen, onClose, editData }) => {
+  const { updateTransaction, currency } = useApp();
+  const [formData, setFormData] = useState({
+    title: '',
+    amount: '',
+    date: '',
+    category: '',
+    account: '',
+  });
+
+  useEffect(() => {
+    if (isOpen && editData) {
+      setFormData({
+        title: editData.title || '',
+        amount: editData.amount || '',
+        date: editData.date || '',
+        category: editData.category || '',
+        account: editData.account || '',
+      });
+    }
+  }, [isOpen, editData]);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!formData.title || !formData.amount) return;
+    updateTransaction(editData.id, formData);
+    onClose();
+  };
+
+  return (
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Edit Statement"
+      subtitle="Update transaction details"
+    >
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">
+            Description
+          </label>
+          <input
+            type="text"
+            required
+            value={formData.title}
+            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+            className="w-full bg-slate-50 dark:bg-[#0A0F1D] text-slate-900 dark:text-white border border-slate-200 dark:border-white/10 rounded-xl px-4 py-2.5 text-sm font-semibold focus:ring-2 focus:ring-purple-500/50 outline-none transition-all"
+          />
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">
+              Amount ({currency})
+            </label>
+            <input
+              type="number"
+              required
+              value={formData.amount}
+              onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+              className="w-full bg-slate-50 dark:bg-[#0A0F1D] text-slate-900 dark:text-white border border-slate-200 dark:border-white/10 rounded-xl px-4 py-2.5 text-sm font-semibold font-mono focus:ring-2 focus:ring-purple-500/50 outline-none transition-all"
+            />
+          </div>
+          <div>
+            <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">
+              Date
+            </label>
+            <input
+              type="date"
+              required
+              value={formData.date}
+              onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+              className="w-full bg-slate-50 dark:bg-[#0A0F1D] text-slate-900 dark:text-white border border-slate-200 dark:border-white/10 rounded-xl px-4 py-2.5 text-sm font-semibold focus:ring-2 focus:ring-purple-500/50 outline-none transition-all"
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">
+              Category
+            </label>
+            <input
+              type="text"
+              value={formData.category}
+              onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+              className="w-full bg-slate-50 dark:bg-[#0A0F1D] text-slate-900 dark:text-white border border-slate-200 dark:border-white/10 rounded-xl px-4 py-2.5 text-sm font-semibold focus:ring-2 focus:ring-purple-500/50 outline-none transition-all"
+            />
+          </div>
+          <div>
+            <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">
+              Account/Mode
+            </label>
+            <input
+              type="text"
+              value={formData.account}
+              onChange={(e) => setFormData({ ...formData, account: e.target.value })}
+              className="w-full bg-slate-50 dark:bg-[#0A0F1D] text-slate-900 dark:text-white border border-slate-200 dark:border-white/10 rounded-xl px-4 py-2.5 text-sm font-semibold focus:ring-2 focus:ring-purple-500/50 outline-none transition-all"
+            />
+          </div>
+        </div>
+
+        <div className="pt-4 flex justify-end">
+          <button
+            type="submit"
+            className="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs shadow-soft transition-all"
+          >
+            Update Statement
+          </button>
+        </div>
+      </form>
+    </Modal>
+  );
+};
